@@ -10,7 +10,6 @@ load_dotenv()
 current_dir = os.path.dirname(__file__)
 token_path = os.path.join(current_dir, 'keys.json')
 
-
 creds = None
 
 

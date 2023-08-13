@@ -1,7 +1,7 @@
 import schedule
 import time
 import datetime
-from script import requestTriggered
+from backend.script import requestTriggered
 
 
 current_datetime = datetime.datetime.now()
@@ -21,6 +21,3 @@ schedule.every().thursday.at('17:00').do(requestTriggered)
 while True:
     schedule.run_pending()
     time.sleep(1)
-
-
-# Every Next Day
