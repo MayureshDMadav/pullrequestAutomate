@@ -17,10 +17,16 @@ def requestTriggered(data):
     return response.text
 
 
+task_count = 0
+
+
 async def simplApiPullRequestCall(data):
     try:
+        global task_count
         url = os.getenv("SIMPL_URL")
         payload = json.dumps(data)
+        task_count += 1
+        print(task_count)
         headers = {
             'Content-Type': 'application/json',
             'SIMPL-SERVICE-ID': os.getenv("SERVICE_ID"),
