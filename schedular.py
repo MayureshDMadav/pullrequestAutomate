@@ -1,13 +1,18 @@
+import asyncio
 import schedule
 import time
 import datetime
-import asyncio
-from script import everyNextDay
+from script import everyNextDay, everyWeekDataProcess
 
 
-# Every Next Day Running
-def everyNextDayRun():
-    asyncio.run(everyNextDay())
+# NEXT DAY SCHEDULING
+
+async def everyNextDayProcess():
+    await everyNextDay()
+
+
+def everyNextDaySchedule():
+    asyncio.run(everyNextDayProcess())
 
 
 current_datetime = datetime.datetime.now()
@@ -16,11 +21,21 @@ next_task_time = next_day.replace(hour=10, minute=0, second=0, microsecond=0)
 time_difference = (next_task_time - current_datetime).total_seconds()
 
 
-schedule.every(time_difference).seconds.do(everyNextDayRun)
+schedule.every(time_difference).seconds.do(everyNextDaySchedule)
 
 
-# Every Week Running
-# schedule.every().thursday.at('17:00').do(requestTriggered)
+# EVERY WEEK SCHEDULING
+
+
+async def everyNextWeekProcess():
+    await everyWeekDataProcess()
+
+
+def everyNextWeekSchedule():
+    asyncio.run(everyNextWeekProcess())
+
+
+schedule.every().thursday.at('17:00').do(everyNextWeekSchedule)
 
 
 while True:

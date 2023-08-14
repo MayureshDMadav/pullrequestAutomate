@@ -7,16 +7,6 @@ import asyncio
 load_dotenv()
 
 
-def requestTriggered(data):
-    url = "https://55e9-103-148-63-122.ngrok-free.app/testApi"
-    payload = json.dumps(data)
-    headers = {
-        'Content-Type': 'application/json'
-    }
-    response = requests.request("POST", url, headers=headers, data=payload)
-    return response.text
-
-
 task_count = 0
 
 
@@ -26,7 +16,8 @@ async def simplApiPullRequestCall(data):
         url = os.getenv("SIMPL_URL")
         payload = json.dumps(data)
         task_count += 1
-        print(task_count)
+        numberOfOperations = str(task_count) + " times"
+        print(numberOfOperations)
         headers = {
             'Content-Type': 'application/json',
             'SIMPL-SERVICE-ID': os.getenv("SERVICE_ID"),
