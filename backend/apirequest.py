@@ -9,7 +9,6 @@ load_dotenv()
 
 async def simplApiPullRequestCall(data):
     try:
-        global task_count
         url = os.getenv("SIMPL_URL")
         payload = json.dumps(data)
         headers = {
