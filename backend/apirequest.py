@@ -7,17 +7,11 @@ import asyncio
 load_dotenv()
 
 
-task_count = 0
-
-
 async def simplApiPullRequestCall(data):
     try:
         global task_count
         url = os.getenv("SIMPL_URL")
         payload = json.dumps(data)
-        task_count += 1
-        numberOfOperations = str(task_count) + " times"
-        print(numberOfOperations)
         headers = {
             'Content-Type': 'application/json',
             'SIMPL-SERVICE-ID': os.getenv("SERVICE_ID"),
