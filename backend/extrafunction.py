@@ -2,14 +2,15 @@ import datetime
 import json
 
 
-def get_current_date_time():
+def get_previous_date_time():
     now = datetime.datetime.now()  # Get current local date and time
-    year = now.year
-    month = str(now.month).zfill(2)
-    day = str(now.day).zfill(2)
-    hours = str(now.hour).zfill(2)
-    minutes = str(now.minute).zfill(2)
-    seconds = str(now.second).zfill(2)
+    previous_day = now - datetime.timedelta(days=1)
+    year = previous_day.year
+    month = str(previous_day.month).zfill(2)
+    day = str(previous_day.day).zfill(2)
+    hours = str(previous_day.hour).zfill(2)
+    minutes = str(previous_day.minute).zfill(2)
+    seconds = str(previous_day.second).zfill(2)
     return f"{year}-{month}-{day}T{hours}:{minutes}:{seconds}Z"
 
 
@@ -25,3 +26,7 @@ def createRequestForPost(data):
 
     response = json.dumps(jsonRequest)
     return response
+
+
+a = get_previous_date_time()
+print(a)
