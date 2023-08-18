@@ -2,21 +2,16 @@ import asyncio
 import schedule
 import time
 import datetime
-from script import everyNextDay, everyWeekDataProcess
-from processheet.sheetprocessor import fetchSheetData,writeShopifyDomain
 from backend.shopifydomainfetch import fetchShopifyDomain
 
 # NEXT DAY SCHEDULING
 
-def domainFetch():
-    try:
-        sheetFromData =  fetchSheetData(0)
-        jsonDomainFetch = fetchShopifyDomain(sheetFromData)
-        a = writeShopifyDomain(sheetFromData,jsonDomainFetch,0)
-        return a
-    except Exception as e:
-        print(e)
-        return e
+def domainFetchingSchedule():
+    fetchShopifyDomain(0)
+
+
+schedule.every(10).seconds.do(domainFetchingSchedule)   
+
 
 # async def everyNextDayProcess():
 #     await everyNextDay()
@@ -51,7 +46,7 @@ def domainFetch():
 
 # schedule.every(10).seconds.do(domainFetch)
 
-domainFetch()
+
 
 while True:
     schedule.run_pending()

@@ -15,37 +15,36 @@ print(current_directory)
 
 from processheet.sheetprocessor import fetchSheetData,writeShopifyDomain
 
-def fetchShopifyDomain():
-    data = fetchSheetData(0)
+def fetchShopifyDomain(sheetNumber):
+    data = fetchSheetData(sheetNumber)
+    if not data:
+        print("Waiting For Data !!!")
+        return
+
     for merchantUrl in data:
         try:
-            if len(merchantUrl["shopify_domain"]) < 1 and len(merchantUrl["shopify_domain"]) == 0:
-                if not merchantUrl["merchant_url"].startswith("https://"):
-                    merchantUrl["merchant_url"] = "https://" + merchantUrl["merchant_url"]
+            shopify_domain = merchantUrl["shopify_domain"]
+            if not shopify_domain:
+                merchant_url = merchantUrl["merchant_url"]                
+                if not merchant_url.startswith("https://"):
+                    merchant_url = "https://" + merchant_url
                     chr_options = Options()
-                    chr_options.add_argument ("--disable-popup-blocking")
-                    chr_options.add_argument('--headless') 
+                    chr_options.add_argument("--disable-popup-blocking")
+                    chr_options.add_argument('--headless')
                     chr_options.add_argument('--disable-gpu')
-                    driver = webdriver.Chrome (service=Service (ChromeDriverManager ().install ()), options=chr_options)
-                    driver.get(merchantUrl["merchant_url"])
+                    driver = webdriver.Chrome(
+                        service=Service(ChromeDriverManager().install()), options=chr_options
+                    )
+                    driver.get(merchant_url)
                     time.sleep(3)
                     domainName = driver.execute_script("return Shopify.shop")
-                    dataInArray = {"merchant_name":merchantUrl["merchant_name"],"domain_name":domainName}
-                    writeShopifyDomain(dataInArray,0)
+                    dataInArray = {"merchant_name": merchantUrl["merchant_name"], "domain_name": domainName}
+                    writeShopifyDomain(dataInArray, sheetNumber)
                 else:
-                    print("Passed URL format is incorrect")
+                    dataInArray = {"merchant_name": merchantUrl["merchant_name"], "domain_name": "Invalid URL"}
+                    writeShopifyDomain(dataInArray, sheetNumber)
+                    break                
         except Exception as e:
-            dataInArray = {"merchant_name":merchantUrl["merchant_name"],"domain_name":"Failed"}
-            writeShopifyDomain(dataInArray,0)
-    if len(dataInArray) > 0:
-        driver.quit()
-        return dataInArray
-    else:
-        print("No List to Update")
-    
-
-    
-    
-
-    
-fetchShopifyDomain()   
+            print(e)
+            dataInArray = {"merchant_name": merchantUrl["merchant_name"], "domain_name": "Failed"}
+            writeShopifyDomain(dataInArray, sheetNumber)

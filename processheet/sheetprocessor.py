@@ -22,7 +22,7 @@ def validateSheet():
     else:
         print("Data file not found")
 
-
+# Fetch Data From Sheet
 def fetchSheetData(sheetNumber):
     validateSheet()
     try:
@@ -79,29 +79,34 @@ def fetchSheetData(sheetNumber):
 
 
 def writeShopifyDomain(data, sheetNumber):
-    validateSheet()
     try:
+        validateSheet()
         service = build('sheets', 'v4', credentials=creds)
         sheet = service.spreadsheets()
-        spreadsheet_id = os.getenv("SAMPLE_SPREADSHEET_ID")
-        spreadsheet = sheet.get(spreadsheetId=spreadsheet_id).execute()
-        sheet_properties = spreadsheet.get(
-            "sheets", [])[sheetNumber].get("properties", "")
-        sheet_title = sheet_properties.get("title", "")
-        last_row = sheet_properties.get(
-            "gridProperties", {}).get("rowCount", 0)
         
-        for row,merchant_name in enumerate(merchant_list):
-            if len(merchant_name['shopify_domain']) < 1:
-                if data:
-                    if data["merchant_name"] == merchant_name["merchant_name"]:
-                        row += 3
-                        if len(data["domain_name"]) > 0: 
-                                print( "Updating At Row : "+ str(row)+" data : " + data["domain_name"])
-                                sheet.values().update(spreadsheetId=spreadsheet_id, range=f"{sheet_title}!C{row}:C{last_row}",
-                                                valueInputOption='RAW', body={"values":[[data["domain_name"]]]}).execute() 
-                    
+        spreadsheet_id = os.getenv("SAMPLE_SPREADSHEET_ID")
+        response = sheet.get(spreadsheetId=spreadsheet_id).execute()
+        sheet_properties = response.get("sheets", [])[sheetNumber].get("properties", {})
+        sheet_title = sheet_properties.get("title", "")
+        last_row = sheet_properties.get("gridProperties", {}).get("rowCount", 0)
+
+        for row, merchant_name in enumerate(merchant_list, start=3):
+            if not merchant_name['shopify_domain']:
+                if data and data["merchant_name"] == merchant_name["merchant_name"]:
+                    if data["domain_name"]:
+                        print(f"Updating At Row: {row}, For Merchant Name: {data['merchant_name']}, has  Domain: {data['domain_name']}")
+                        range_str = f"{sheet_title}!C{row}:C{last_row}"
+                        values = [[data["domain_name"]]]
+                        sheet.values().update(
+                            spreadsheetId=spreadsheet_id,
+                            range=range_str,
+                            valueInputOption='RAW',
+                            body={"values": values}
+                        ).execute()
+                    break
+
     except Exception as e:
+        print("Error while Fetching Shopify Domain Data")
         print(e)
-    
+
     
