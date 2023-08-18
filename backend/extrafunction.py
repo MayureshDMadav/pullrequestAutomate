@@ -22,11 +22,7 @@ def createRequestForPost(data):
         jsonRequest["reason"] = "address ingestion"
         jsonRequest["run_by"] = "mayuresh.madav@getsimpl.com"
         jsonRequest["start_date"] = "2021-12-31T18:29:29Z"
-        jsonRequest["end_date"] = get_current_date_time()
+        jsonRequest["end_date"] = get_previous_date_time()
 
     response = json.dumps(jsonRequest)
     return response
-
-
-a = get_previous_date_time()
-print(a)
