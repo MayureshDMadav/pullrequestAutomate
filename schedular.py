@@ -3,19 +3,24 @@ import schedule
 import time
 import datetime
 from backend.shopifydomainfetch import fetchShopifyDomain
+from backend.new_merchant_address import apiRequestCallforNewMerchant
 
 
 # DOMAIN UPDATION
 
-def domainFetchingSchedule():
-    response = fetchShopifyDomain(0)
-    print(response)
+def domainFetching(sheetNumber):
+    response = fetchShopifyDomain(sheetNumber)
+    return response
+
+# Rest API CALL For New Merchant Sheet and Updating the Status as Done or Failed
+
+def restApiCallForNewMerchant(sheetNumber):
+    response = apiRequestCallforNewMerchant(sheetNumber)
+    return response
 
 
-a = domainFetchingSchedule()
+a = domainFetching(0)
 print(a)
-
-
 
 # schedule.every(10).seconds.do(domainFetchingSchedule)   
 

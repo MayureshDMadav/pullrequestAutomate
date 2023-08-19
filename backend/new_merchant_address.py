@@ -9,7 +9,7 @@ from processheet.sheetprocessor import dataFilter,writeApiCallData
 from backend.extrafunction import createRequestForPost
 from backend.apirequest import testApiCall
 
-def apiRequestCall(sheetNumber):
+def apiRequestCallforNewMerchant(sheetNumber):
     try:
         dataFromSheet = dataFilter(sheetNumber)
         if dataFromSheet:            
@@ -30,5 +30,5 @@ def apiRequestCall(sheetNumber):
 
 
 
-apiRequestCall(0)
+
 

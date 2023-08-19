@@ -48,7 +48,6 @@ def fetchShopifyDomain(sheetNumber):
             else:
                 response += "No Data To Update\n"
         except Exception as e:
-            print(e)
             dataInArray = {"merchant_name": merchantUrl["merchant_name"], "domain_name": "Failed"}
             writeShopifyDomain(dataInArray, sheetNumber)
             response += f"Domain writing failed for '{merchantUrl['merchant_name']}'\n"
