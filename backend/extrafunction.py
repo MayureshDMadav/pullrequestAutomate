@@ -17,7 +17,7 @@ def get_previous_date_time():
 def createRequestForPost(data):
     if data:
         jsonRequest = {}
-        jsonRequest["store_domain"] = data["merchant_url"]
+        jsonRequest["store_domain"] = data
         jsonRequest["pull_type"] = "customer_info"
         jsonRequest["reason"] = "address ingestion"
         jsonRequest["run_by"] = "mayuresh.madav@getsimpl.com"

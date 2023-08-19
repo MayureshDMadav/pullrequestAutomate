@@ -11,16 +11,16 @@ parent_directory = os.path.dirname(os.path.abspath(current_directory))
 
 sys.path.append(parent_directory)
 
-print(current_directory)
 
-from processheet.sheetprocessor import fetchSheetData,writeShopifyDomain
+from processheet.sheetprocessor import writeShopifyDomain,dataFilter
 
 def fetchShopifyDomain(sheetNumber):
-    data = fetchSheetData(sheetNumber)
+    data = dataFilter(sheetNumber)
     if not data:
-        print("Waiting For Data !!!")
-        return
-
+        return "Waiting For Data !!!"
+    
+    response = ""
+    
     for merchantUrl in data:
         try:
             shopify_domain = merchantUrl["shopify_domain"]
@@ -40,11 +40,22 @@ def fetchShopifyDomain(sheetNumber):
                     domainName = driver.execute_script("return Shopify.shop")
                     dataInArray = {"merchant_name": merchantUrl["merchant_name"], "domain_name": domainName}
                     writeShopifyDomain(dataInArray, sheetNumber)
+                    response += f"Domain for '{merchantUrl['merchant_name']}' successfully written.\n"
                 else:
                     dataInArray = {"merchant_name": merchantUrl["merchant_name"], "domain_name": "Invalid URL"}
                     writeShopifyDomain(dataInArray, sheetNumber)
-                    break                
+                    response += f"Invalid URL for '{merchantUrl['merchant_name']}' detected.\n"
+            else:
+                response += "No Data To Update\n"
         except Exception as e:
             print(e)
             dataInArray = {"merchant_name": merchantUrl["merchant_name"], "domain_name": "Failed"}
             writeShopifyDomain(dataInArray, sheetNumber)
+            response += f"Domain writing failed for '{merchantUrl['merchant_name']}'\n"
+    
+    return response
+
+
+
+
+

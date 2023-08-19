@@ -13,7 +13,7 @@ token_path = os.path.join(current_dir, 'keys.json')
 
 creds = None
 
-
+# Validation Of Sheet
 def validateSheet():
     global creds
     if os.path.exists(token_path):
@@ -77,7 +77,52 @@ def fetchSheetData(sheetNumber):
         merchant_list.append({"status": False})
         return merchant_list
 
+# Remove Duplicates From Sheets
+def dataFilter(sheetNumber):
+    try:
+        validateSheet()
+        service = build('sheets', 'v4', credentials=creds)
+        sheet = service.spreadsheets()
+        spreadsheet_id = os.getenv("SAMPLE_SPREADSHEET_ID")
+        response = sheet.get(spreadsheetId=spreadsheet_id).execute()
+        sheet_properties = response.get("sheets", [])[sheetNumber].get("properties", {})
+        sheet_title = sheet_properties.get("title", "")
+        last_row = sheet_properties.get(
+            "gridProperties", {}).get("rowCount", 0)
+        unique_domains = {}
+        filtered_data = []
+        actualData = fetchSheetData(sheetNumber)
+        for index, item in enumerate(actualData,start=3):
+            merchant_url = item.get('merchant_url',"").lower()
+            merchant_name = item.get('merchant_name',"").lower()
+            if merchant_url and merchant_name not in unique_domains :               
+                unique_domains[merchant_url] = True
+                unique_domains[merchant_name] = True
+                filtered_data.append(item)
+            else:
+                range_str = f"{sheet_title}!A{index}:C{index}"
+                sheet.values().clear(
+                    spreadsheetId=spreadsheet_id,
+                    range=range_str,
+                ).execute()
+                print(f"Duplicate Record for {item['merchant_name']} at row {str(index)} hence Deleted")
+        if filtered_data:
+            values_to_write = [[ item['merchant_name'], item['merchant_url'], item['shopify_domain']] for item in filtered_data]
+            update_range = f"{sheet_title}!A3:C{last_row}"
+            clear_range = f"{sheet_title}!A3:C{last_row}"
+            update_values = {'values': values_to_write}
+            sheet.values().clear(
+                    spreadsheetId=spreadsheet_id,
+                    range=clear_range,
+                ).execute()
+            sheet.values().update(spreadsheetId=spreadsheet_id, range=update_range,
+                                valueInputOption='RAW', body=update_values).execute()
+        return filtered_data     
+    except Exception as  e:
+        print(e)
+        return filtered_data
 
+# Update Domain Name on the Sheet
 def writeShopifyDomain(data, sheetNumber):
     try:
         validateSheet()
@@ -104,9 +149,44 @@ def writeShopifyDomain(data, sheetNumber):
                             body={"values": values}
                         ).execute()
                     break
-
+        return True
     except Exception as e:
         print("Error while Fetching Shopify Domain Data")
         print(e)
+        return False
 
-    
+# Update Status For API Request    
+def writeApiCallData(data,sheetNumber):
+    try:
+        validateSheet()
+        service = build('sheets', 'v4', credentials=creds)
+        sheet = service.spreadsheets()
+        
+        spreadsheet_id = os.getenv("SAMPLE_SPREADSHEET_ID")
+        response = sheet.get(spreadsheetId=spreadsheet_id).execute()
+        sheet_properties = response.get("sheets", [])[sheetNumber].get("properties", {})
+        sheet_title = sheet_properties.get("title", "")
+        last_row = sheet_properties.get("gridProperties", {}).get("rowCount", 0)
+        if merchant_list:
+            for index, data_itms in enumerate(merchant_list,start=3):
+                sheet2DataArry = []
+                if data_itms["status"] == 'Not Done':
+                    if data["merchant_name"] == data_itms["merchant_name"]:
+                        if len(data_itms["shopify_domain"]) > 1:
+                            print(f"{data['merchant_name']} at row {index} will get the status as {data['status']} ")
+                            sheet2DataArry.append(data)
+                            update_range = f"{sheet_title}!D{index}:D{last_row}"
+                            status_update = [[data['status']]]
+                            sheet.values().update(
+                                    spreadsheetId=spreadsheet_id,
+                                    range=update_range,
+                                    valueInputOption='RAW',
+                                    body={"values": status_update}
+                                ).execute()
+                            
+                
+        
+            
+    except Exception as e:
+        print(e)
+

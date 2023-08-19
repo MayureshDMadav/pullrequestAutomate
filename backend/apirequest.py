@@ -7,10 +7,28 @@ import asyncio
 load_dotenv()
 
 
+def testApiCall(data):
+    try:
+        url= "https://55e9-103-148-63-122.ngrok-free.app/testAPI"
+        payload = data
+        headers = {
+        'Content-Type': 'application/json'
+        }
+        response = requests.request("POST", url, headers=headers, data=payload)
+        res = response.json()      
+        if res["status"] == True:
+            return True
+        else:
+            return False
+    except Exception as e:
+        print(e)
+        return False
+
+
 async def simplApiPullRequestCall(data):
     try:
         url = os.getenv("SIMPL_URL")
-        payload = json.dumps(data)
+        payload = data
         headers = {
             'Content-Type': 'application/json',
             'SIMPL-SERVICE-ID': os.getenv("SERVICE_ID"),

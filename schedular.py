@@ -4,13 +4,20 @@ import time
 import datetime
 from backend.shopifydomainfetch import fetchShopifyDomain
 
-# NEXT DAY SCHEDULING
+
+# DOMAIN UPDATION
 
 def domainFetchingSchedule():
-    fetchShopifyDomain(0)
+    response = fetchShopifyDomain(0)
+    print(response)
 
 
-schedule.every(10).seconds.do(domainFetchingSchedule)   
+a = domainFetchingSchedule()
+print(a)
+
+
+
+# schedule.every(10).seconds.do(domainFetchingSchedule)   
 
 
 # async def everyNextDayProcess():
