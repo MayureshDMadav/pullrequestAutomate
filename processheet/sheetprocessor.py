@@ -23,7 +23,6 @@ def validateSheet():
         print("Data file not found")
 
 # Fetch Data From Sheet
-
 def fetchSheetData(sheetNumber):
     validateSheet()
     try:
@@ -34,7 +33,6 @@ def fetchSheetData(sheetNumber):
         sheet_properties = spreadsheet["sheets"][sheetNumber].get("properties", {})
         sheet_title = sheet_properties.get("title", "")
         last_row = sheet_properties["gridProperties"].get("rowCount", 0)
-        last_col = sheet_properties["gridProperties"].get("columnCount", 0)
         auto_range = f"{sheet_title}!A3:E{last_row}"
 
         result = sheet.values().get(spreadsheetId=spreadsheet_id, range=auto_range).execute()
@@ -102,9 +100,6 @@ def dataFilter(sheetNumber):
     except Exception as  e:
         print(e)
         return filtered_data
-
-
-
 
 # Update Domain Name on the Sheet
 def writeShopifyDomain(data, sheetNumber):

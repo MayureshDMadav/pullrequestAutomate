@@ -19,8 +19,6 @@ def restApiCallForNewMerchant(sheetNumber):
     return response
 
 
-a = domainFetching(0)
-print(a)
 
 # schedule.every(10).seconds.do(domainFetchingSchedule)   
 
