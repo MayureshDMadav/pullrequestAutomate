@@ -37,17 +37,17 @@ def secondSheetRequestProcess():
     apiRequestCallforWeeklyMerchant(1)
     print("Succesfully Update the details")
     
-firstToSecondSheet()
-
-# def main():
-#     print("Processing First Sheet Request")
-#     firstToSecondSheet()
-#     print("Processing Second Sheet Request")
-#     secondSheetRequestProcess()
 
 
+def main():
+    print("Processing First Sheet Request")
+    firstToSecondSheet()
+    print("Processing Second Sheet Request")
+    secondSheetRequestProcess()
 
-# main()
+
+
+main()
 
 # schedule.every(10).seconds.do(domainFetchingSchedule)   
 
