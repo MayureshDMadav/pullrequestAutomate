@@ -238,7 +238,7 @@ def pushDataFromFirstToSecond(sheetNumber):
                     shopify_domain = data.get("shopify_domain",'')
                     status = data.get("status",'') 
                     dataNTime = data.get("timeNdate",'')
-                    update_values = [[merchant_name, merchant_url, shopify_domain, status, dataNTime]] 
+                    update_values = [[merchant_name, merchant_url, shopify_domain,  dataNTime,status]] 
                     update_range = f"{sheet_title}!A{countOfRow}:E{countOfRow}"
                     sheet.values().update(
                                 spreadsheetId=spreadsheet_id,
