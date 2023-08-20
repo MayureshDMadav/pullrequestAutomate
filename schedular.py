@@ -3,22 +3,39 @@ import schedule
 import time
 import datetime
 from backend.shopifydomainfetch import fetchShopifyDomain
+from processheet.sheetprocessor import pushDataFromFirstToSecond
 from backend.new_merchant_address import apiRequestCallforNewMerchant
-
+from backend.weekly_data_request import apiRequestCallforWeeklyMerchant 
 
 # DOMAIN UPDATION
-
 def domainFetching(sheetNumber):
     response = fetchShopifyDomain(sheetNumber)
     return response
 
 # Rest API CALL For New Merchant Sheet and Updating the Status as Done or Failed
-
 def restApiCallForNewMerchant(sheetNumber):
-    response = apiRequestCallforNewMerchant(sheetNumber)
-    return response
+    apiRequestCallforNewMerchant(sheetNumber)
+   
+def pushDataFromFstToScnd(sheetNumber):
+    pushDataFromFirstToSecond(sheetNumber)
+   
+def firstToSecondSheet():
+    print("Updating Domain and removing Duplicates ===>")
+    domainFetching(0)
+    print("Executing Rest API CAll ===>")
+    restApiCallForNewMerchant(0)
+    print("Pushing Data To Another Sheet ===>")
+    pushDataFromFstToScnd(1)
+
+def secondSheetRequestProcess():
+    print("Updating Domain and removing Duplicates ===>")
+    domainFetching(1)
+    print("Executing Rest API CAll ===>")
+    apiRequestCallforWeeklyMerchant(1)
+    print("Succesfully Update the details")
 
 
+secondSheetRequestProcess()
 
 # schedule.every(10).seconds.do(domainFetchingSchedule)   
 

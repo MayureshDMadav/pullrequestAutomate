@@ -53,7 +53,7 @@ def fetchSheetData(sheetNumber):
         return merchant_list
 
     except HttpError as err:
-        print(err)
+        print("Issue with the Fetch Request")
         return [{"status": False}]
 
 # Remove Duplicates From Sheets
@@ -98,7 +98,7 @@ def dataFilter(sheetNumber):
                                 valueInputOption='RAW', body=update_values).execute()
         return filtered_data     
     except Exception as  e:
-        print(e)
+        print("Issue with Filter Function !!")
         return filtered_data
 
 # Update Domain Name on the Sheet
@@ -175,34 +175,79 @@ def writeApiCallData(data,sheetNumber):
         print(e)
         return False
 
+# Update Status For API Request for WeeklySheet   
+def writeApiCallDataForWeek(data,sheetNumber):
+    try:
+        validateSheet()
+        service = build('sheets', 'v4', credentials=creds)
+        sheet = service.spreadsheets()
+        spreadsheet_id = os.getenv("SAMPLE_SPREADSHEET_ID")
+        response = sheet.get(spreadsheetId=spreadsheet_id).execute()
+        sheet_properties = response.get("sheets", [])[sheetNumber].get("properties", {})
+        sheet_title = sheet_properties.get("title", "")
+        last_row = sheet_properties.get("gridProperties", {}).get("rowCount", 0)
+        if merchant_list:
+            for index, data_itms in enumerate(merchant_list,start=3):
+                if data["merchant_name"] == data_itms["merchant_name"]:
+                    if len(data_itms["shopify_domain"]) > 1:
+                        print(f"{data['merchant_name']} at row {index} will get the status as {data['status']} ")
+                        update_range = f"{sheet_title}!D{index}:D{last_row}"
+                        current_datetime = datetime.datetime.now()
+                        update_date = f"{sheet_title}!E{index}:E{last_row}"
+                        status_update = [[data['status']]]
+                        sheet.values().update(
+                                spreadsheetId=spreadsheet_id,
+                                range=update_range,
+                                valueInputOption='RAW',
+                                body={"values": status_update}
+                            ).execute()
+                        append_values = [[current_datetime.strftime(
+                                                 '%Y-%m-%d %H:%M:%S')]]
+                        sheet.values().update(
+                                spreadsheetId=spreadsheet_id,
+                                range=update_date,
+                                valueInputOption='RAW',
+                                body={"values": append_values}
+                            ).execute()                        
+        return True            
+    except Exception as e:
+        print(e)
+        return False
 
 # Push Data from First Sheet to  Second Sheet 
-# def pushDataFromFirstToSecond(sheetNumber):
-#     try:
-#         response= dataFilter(sheetNumber)
-#         if response:
-#             validateSheet()
-#             service = build('sheets', 'v4', credentials=creds)
-#             sheet = service.spreadsheets()
-#             spreadsheet_id = os.getenv("SAMPLE_SPREADSHEET_ID")
-#             response = sheet.get(spreadsheetId=spreadsheet_id).execute()
-#             sheet_properties = response.get("sheets", [])[sheetNumber].get("properties", {})
-#             sheet_title = sheet_properties.get("title", "")
-#             last_row = sheet_properties.get(
-#             "gridProperties", {}).get("rowCount", 0)
-#             countOFRow = len(response)
-#             responseOfFirstSheet = dataFilter(0)
-#             for index,data in enumerate(responseOfFirstSheet):
-#                 if data.get("status",'') == "Done":
-#                     for index,weekData in enumerate(response,start=3):
-#                         merchant_name = data.get("merchant_name",'')
-#                         merchant_url = data.get("merchant_url",'')
-#                         shopify_domain = data.get("merchant_url",'')
-#                         status = data.get("status",'') 
-#                         update_range = f"{sheet_title}!A3:C{last_row}"
-#                         print(data)
-#     except Exception as e:
-#         print(e)
+def pushDataFromFirstToSecond(sheetNumber):
+    try:
+        validateSheet()
+        response= dataFilter(sheetNumber)
+        service = build('sheets', 'v4', credentials=creds)
+        sheet = service.spreadsheets()
+        spreadsheet_id = os.getenv("SAMPLE_SPREADSHEET_ID")
+        spreadsheet = sheet.get(spreadsheetId=spreadsheet_id).execute()
+        sheet_properties = spreadsheet["sheets"][sheetNumber].get("properties", {})
+        sheet_title = sheet_properties.get("title", "")
+        last_row = sheet_properties["gridProperties"].get("rowCount", 0)
+        responseOfFirstSheet = dataFilter(0)
+        responseofSecondSheet = dataFilter(1)
+        countOfRow = len(responseofSecondSheet) + 3
+        if responseofSecondSheet:    
+            for index,data in enumerate(responseOfFirstSheet):
+                if data.get("status",'') == "Done":
+                    merchant_name = data.get("merchant_name",'')
+                    merchant_url = data.get("merchant_url",'')
+                    shopify_domain = data.get("merchant_url",'')
+                    status = data.get("status",'') 
+                    dataNTime = data.get("timeNdate",'')
+                    update_values = [[merchant_name, merchant_url, shopify_domain, status, dataNTime]] 
+                    print(update_values)
+                    update_range = f"{sheet_title}!A{countOfRow}:E{countOfRow}"
+                    sheet.values().update(
+                                spreadsheetId=spreadsheet_id,
+                                range=update_range,
+                                valueInputOption='RAW',
+                                body={"values": update_values}
+                            ).execute()
+                    countOfRow +=1       
+    except Exception as e:
+        print(e)
 
 
-# pushDataFromFirstToSecond(1)
