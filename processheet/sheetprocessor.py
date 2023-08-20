@@ -152,9 +152,9 @@ def writeApiCallData(data,sheetNumber):
                     if data["merchant_name"] == data_itms["merchant_name"]:
                         if len(data_itms["shopify_domain"]) > 1:
                             print(f"{data['merchant_name']} at row {index} will get the status as {data['status']} ")
-                            update_date = f"{sheet_title}!E{index}:E{last_row}"
                             current_datetime = datetime.datetime.now()
-                            update_range = f"{sheet_title}!D{index}:D{last_row}"
+                            update_range = f"{sheet_title}!E{index}:E{last_row}"
+                            update_date = f"{sheet_title}!D{index}:D{last_row}"
                             status_update = [[data['status']]]
                             sheet.values().update(
                                     spreadsheetId=spreadsheet_id,
@@ -192,9 +192,9 @@ def writeApiCallDataForWeek(data,sheetNumber):
                 if data["merchant_name"] == data_itms["merchant_name"]:
                     if len(data_itms["shopify_domain"]) > 1:
                         print(f"{data['merchant_name']} at row {index} will get the status as {data['status']} ")
-                        update_date = f"{sheet_title}!E{index}:E{last_row}"
                         current_datetime = datetime.datetime.now()
-                        update_range = f"{sheet_title}!D{index}:D{last_row}"
+                        update_range = f"{sheet_title}!E{index}:E{last_row}"
+                        update_date = f"{sheet_title}!D{index}:D{last_row}"
                         status_update = [[data['status']]]
                         sheet.values().update(
                                 spreadsheetId=spreadsheet_id,
