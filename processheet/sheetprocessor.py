@@ -169,10 +169,11 @@ def writeApiCallData(data,sheetNumber):
                                     range=update_date,
                                     valueInputOption='RAW',
                                     body={"values": append_values}
-                                ).execute()                        
+                                ).execute()
+                                                    
         return True            
     except Exception as e:
-        print(e)
+        print("Issue in writeApiCallData function")
         return False
 
 # Update Status For API Request for WeeklySheet   
@@ -211,7 +212,7 @@ def writeApiCallDataForWeek(data,sheetNumber):
                             ).execute()                        
         return True            
     except Exception as e:
-        print(e)
+        print("Issue in writeApiCallDataForWeek functon")
         return False
 
 # Push Data from First Sheet to  Second Sheet 
@@ -234,11 +235,10 @@ def pushDataFromFirstToSecond(sheetNumber):
                 if data.get("status",'') == "Done":
                     merchant_name = data.get("merchant_name",'')
                     merchant_url = data.get("merchant_url",'')
-                    shopify_domain = data.get("merchant_url",'')
+                    shopify_domain = data.get("shopify_domain",'')
                     status = data.get("status",'') 
                     dataNTime = data.get("timeNdate",'')
                     update_values = [[merchant_name, merchant_url, shopify_domain, status, dataNTime]] 
-                    print(update_values)
                     update_range = f"{sheet_title}!A{countOfRow}:E{countOfRow}"
                     sheet.values().update(
                                 spreadsheetId=spreadsheet_id,
@@ -246,8 +246,8 @@ def pushDataFromFirstToSecond(sheetNumber):
                                 valueInputOption='RAW',
                                 body={"values": update_values}
                             ).execute()
-                    countOfRow +=1       
+                    countOfRow +=1     
     except Exception as e:
-        print(e)
+        print("Issue in Data Pushing Function")
 
 

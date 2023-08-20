@@ -3,7 +3,7 @@ import schedule
 import time
 import datetime
 from backend.shopifydomainfetch import fetchShopifyDomain
-from processheet.sheetprocessor import pushDataFromFirstToSecond
+from processheet.sheetprocessor import pushDataFromFirstToSecond,dataFilter
 from backend.new_merchant_address import apiRequestCallforNewMerchant
 from backend.weekly_data_request import apiRequestCallforWeeklyMerchant 
 
@@ -26,6 +26,9 @@ def firstToSecondSheet():
     restApiCallForNewMerchant(0)
     print("Pushing Data To Another Sheet ===>")
     pushDataFromFstToScnd(1)
+    print("Removing Duplicated Data")
+    dataFilter(1)
+    print("Data have been pushed Successfully")
 
 def secondSheetRequestProcess():
     print("Updating Domain and removing Duplicates ===>")
@@ -33,9 +36,18 @@ def secondSheetRequestProcess():
     print("Executing Rest API CAll ===>")
     apiRequestCallforWeeklyMerchant(1)
     print("Succesfully Update the details")
+    
+firstToSecondSheet()
+
+# def main():
+#     print("Processing First Sheet Request")
+#     firstToSecondSheet()
+#     print("Processing Second Sheet Request")
+#     secondSheetRequestProcess()
 
 
-secondSheetRequestProcess()
+
+# main()
 
 # schedule.every(10).seconds.do(domainFetchingSchedule)   
 
@@ -75,6 +87,6 @@ secondSheetRequestProcess()
 
 
 
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+# while True:
+#     schedule.run_pending()
+#     time.sleep(1)
