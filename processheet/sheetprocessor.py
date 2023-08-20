@@ -46,8 +46,8 @@ def fetchSheetData(sheetNumber):
                         "merchant_name": data[0],
                         "merchant_url": data[1],
                         "shopify_domain": data[2],
-                        "status": data[3],
-                        "timeNdate": data[4] if len(data) >= 5 else ""
+                        "status": data[4],
+                        "timeNdate": data[3] if len(data) >= 5 else ""
                     }
                     merchant_list.append(sheetData)
         return merchant_list
@@ -88,7 +88,7 @@ def dataFilter(sheetNumber):
         if filtered_data:
             values_to_write = [[ item['merchant_name'], item['merchant_url'], item['shopify_domain']] for item in filtered_data]
             update_range = f"{sheet_title}!A3:C{last_row}"
-            clear_range = f"{sheet_title}!A3:C{last_row}"
+            clear_range = f"{sheet_title}!A3:D{last_row}"
             update_values = {'values': values_to_write}
             sheet.values().clear(
                     spreadsheetId=spreadsheet_id,
@@ -152,9 +152,9 @@ def writeApiCallData(data,sheetNumber):
                     if data["merchant_name"] == data_itms["merchant_name"]:
                         if len(data_itms["shopify_domain"]) > 1:
                             print(f"{data['merchant_name']} at row {index} will get the status as {data['status']} ")
-                            update_range = f"{sheet_title}!D{index}:D{last_row}"
-                            current_datetime = datetime.datetime.now()
                             update_date = f"{sheet_title}!E{index}:E{last_row}"
+                            current_datetime = datetime.datetime.now()
+                            update_range = f"{sheet_title}!D{index}:D{last_row}"
                             status_update = [[data['status']]]
                             sheet.values().update(
                                     spreadsheetId=spreadsheet_id,
@@ -192,9 +192,9 @@ def writeApiCallDataForWeek(data,sheetNumber):
                 if data["merchant_name"] == data_itms["merchant_name"]:
                     if len(data_itms["shopify_domain"]) > 1:
                         print(f"{data['merchant_name']} at row {index} will get the status as {data['status']} ")
-                        update_range = f"{sheet_title}!D{index}:D{last_row}"
-                        current_datetime = datetime.datetime.now()
                         update_date = f"{sheet_title}!E{index}:E{last_row}"
+                        current_datetime = datetime.datetime.now()
+                        update_range = f"{sheet_title}!D{index}:D{last_row}"
                         status_update = [[data['status']]]
                         sheet.values().update(
                                 spreadsheetId=spreadsheet_id,
