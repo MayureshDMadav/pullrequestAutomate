@@ -7,47 +7,50 @@ from processheet.sheetprocessor import pushDataFromFirstToSecond,dataFilter
 from backend.new_merchant_address import apiRequestCallforNewMerchant
 from backend.weekly_data_request import apiRequestCallforWeeklyMerchant 
 
-# DOMAIN UPDATION
-def domainFetching(sheetNumber):
-    response = fetchShopifyDomain(sheetNumber)
-    return response
 
-# Rest API CALL For New Merchant Sheet and Updating the Status as Done or Failed
-def restApiCallForNewMerchant(sheetNumber):
-    apiRequestCallforNewMerchant(sheetNumber)
-   
-def pushDataFromFstToScnd(sheetNumber):
-    pushDataFromFirstToSecond(sheetNumber)
-   
-def firstToSecondSheet():
+def domainUpdationToSheet(sheetNumber):
+    fetchShopifyDomain(sheetNumber)
+
+
+# SCHEDULAR FUNCTIONS
+
+# Rest API CALL For New Merchant 
+def firsSheetRequestProcess():
     print("Updating Domain and removing Duplicates ===>")
-    domainFetching(0)
+    fetchShopifyDomain(0)
     print("Executing Rest API CAll ===>")
-    restApiCallForNewMerchant(0)
+    apiRequestCallforNewMerchant(0)
     print("Pushing Data To Another Sheet ===>")
-    pushDataFromFstToScnd(1)
+    pushDataFromFirstToSecond(1)
     print("Removing Duplicated Data")
     dataFilter(1)
     print("Data have been pushed Successfully")
-
+   
+# Second Sheet Data Processng
 def secondSheetRequestProcess():
     print("Updating Domain and removing Duplicates ===>")
-    domainFetching(1)
+    fetchShopifyDomain(1)
     print("Executing Rest API CAll ===>")
     apiRequestCallforWeeklyMerchant(1)
     print("Succesfully Update the details")
-    
+
+# NEW MERCHANT DATA PULL FUNCTION ===>
+# firsSheetRequestProcess()
+
+# WEEKLY MERCHANT DATA PULL FUNCTOIN ===>
+# secondSheetRequestProcess()
+
+# Update Shopify Domain 
+domainUpdationToSheet(0)
+
+# def main():
+#     print("Processing First Sheet Request")
+#     firstToSecondSheet()
+#     print("Processing Second Sheet Request")
+#     secondSheetRequestProcess()
 
 
-def main():
-    print("Processing First Sheet Request")
-    firstToSecondSheet()
-    print("Processing Second Sheet Request")
-    secondSheetRequestProcess()
-
-
-
-main()
+# main()
 
 # schedule.every(10).seconds.do(domainFetchingSchedule)   
 

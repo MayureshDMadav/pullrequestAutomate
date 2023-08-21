@@ -79,15 +79,15 @@ def dataFilter(sheetNumber):
                 unique_domains[merchant_name] = True
                 filtered_data.append(item)
             else:
-                range_str = f"{sheet_title}!A{index}:C{index}"
+                range_str = f"{sheet_title}!A{index}:D{index}"
                 sheet.values().clear(
                     spreadsheetId=spreadsheet_id,
                     range=range_str,
                 ).execute()
                 print(f"Duplicate Record for {item['merchant_name']} at row {str(index)} hence Deleted")
         if filtered_data:
-            values_to_write = [[ item['merchant_name'], item['merchant_url'], item['shopify_domain']] for item in filtered_data]
-            update_range = f"{sheet_title}!A3:C{last_row}"
+            values_to_write = [[ item['merchant_name'], item['merchant_url'], item['shopify_domain'] , item['timeNdate']] for item in filtered_data]
+            update_range = f"{sheet_title}!A3:D{last_row}"
             clear_range = f"{sheet_title}!A3:D{last_row}"
             update_values = {'values': values_to_write}
             sheet.values().clear(
@@ -98,6 +98,7 @@ def dataFilter(sheetNumber):
                                 valueInputOption='RAW', body=update_values).execute()
         return filtered_data     
     except Exception as  e:
+        print(e)
         print("Issue with Filter Function !!")
         return filtered_data
 
@@ -145,7 +146,6 @@ def writeApiCallData(data,sheetNumber):
         sheet_properties = response.get("sheets", [])[sheetNumber].get("properties", {})
         sheet_title = sheet_properties.get("title", "")
         last_row = sheet_properties.get("gridProperties", {}).get("rowCount", 0)
-        dataForScnSheet = {}
         if merchant_list:
             for index, data_itms in enumerate(merchant_list,start=3):
                 if data_itms["status"] == 'Not Done':

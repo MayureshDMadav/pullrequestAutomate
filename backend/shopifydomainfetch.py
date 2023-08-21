@@ -8,9 +8,7 @@ from selenium.webdriver.chrome.options import Options
 
 current_directory = os.getcwd()
 parent_directory = os.path.dirname(os.path.abspath(current_directory))
-
 sys.path.append(parent_directory)
-
 
 from processheet.sheetprocessor import writeShopifyDomain,dataFilter
 
@@ -18,9 +16,6 @@ def fetchShopifyDomain(sheetNumber):
     data = dataFilter(sheetNumber)
     if not data:
         return "Waiting For Data !!!"
-    
-    response = ""
-    
     for merchantUrl in data:
         try:
             os.remove(ChromeDriverManager().install())
@@ -43,21 +38,16 @@ def fetchShopifyDomain(sheetNumber):
                     time.sleep(3)
                     domainName = driver.execute_script("return Shopify.shop")
                     dataInArray = {"merchant_name": merchantUrl["merchant_name"], "domain_name": domainName}
-                    writeShopifyDomain(dataInArray, sheetNumber)
-                    response += f"Domain for '{merchantUrl['merchant_name']}' successfully written.\n"
+                    writeShopifyDomain(dataInArray, sheetNumber)                
                 else:
                     dataInArray = {"merchant_name": merchantUrl["merchant_name"], "domain_name": "Invalid URL"}
                     writeShopifyDomain(dataInArray, sheetNumber)
-                    response += f"Invalid URL for '{merchantUrl['merchant_name']}' detected.\n"
             else:
-                response += "No Data To Update\n"
+                print("waiting For Data")
         except Exception as e:
-            print(e)
             dataInArray = {"merchant_name": merchantUrl["merchant_name"], "domain_name": "Failed"}
             writeShopifyDomain(dataInArray, sheetNumber)
-            response += f"Domain writing failed for '{merchantUrl['merchant_name']}'\n"
-    
-    return response
+            print("Domain Update Failed")
 
 
 
