@@ -25,7 +25,7 @@ def testApiCall(data):
         return False
 
 
-async def simplApiPullRequestCall(data):
+def simplApiPullRequestCall(data):
     try:
         url = os.getenv("SIMPL_URL")
         payload = data
@@ -36,8 +36,8 @@ async def simplApiPullRequestCall(data):
             'SIMPL-SERVICE-SIGNATURE': os.getenv("SERVICE_SIGNATURE")
         }
 
-        response = await asyncio.to_thread(requests.post, url, headers=headers, data=payload)
-
+        response = requests.request('POST', url, headers=headers, data=payload)
+        print(response.text)
         if response.status_code == 200:
             return True
         else:
