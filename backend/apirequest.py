@@ -37,7 +37,6 @@ def simplApiPullRequestCall(data):
         }
 
         response = requests.request('POST', url, headers=headers, data=payload)
-        print(response.text)
         if response.status_code == 200:
             return True
         else:
