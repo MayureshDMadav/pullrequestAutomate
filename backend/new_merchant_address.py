@@ -14,9 +14,7 @@ def apiRequestCallforNewMerchant(sheetNumber):
         dataFromSheet = dataFilter(sheetNumber)
         if dataFromSheet:            
             for index , data in enumerate(dataFromSheet):
-                if data.get('status',"") == 'Not Done' and data.get('shopify_domain',""):
-                    print("API DATA===>",data)                
-                    domainUrl = data.get('shopify_domain',"")
+                if data.get('status',"") == 'Not Done' and data.get('shopify_domain',""):                
                     apiRequestForPost = createRequestForPost(domainUrl)
                     response = simplApiPullRequestCall(apiRequestForPost)
                     if(response == True):

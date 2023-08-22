@@ -23,24 +23,22 @@ def firsSheetRequestProcess():
     print("Checking Failed Responses and reinitiating API Request")
     failedScenarioApiCall(0)
     print("ReAttempt Ended")
-    print("Pushing Data To Another Sheet Which are done ===>")
     pushDataFromFirstToSecond(1)
-    print("Removing Duplicated Data")
     dataFilter(1)
-    print("Data have been pushed Successfully")
+    print("Data have been processed Successfully")
     
    
 # Second Sheet Data Processng
-def secondSheetRequestProcess():
-    print("Updating Domain and removing Duplicates ===>")
-    fetchShopifyDomain(1)
-    print("Executing Rest API CAll Second Sheet===>")
-    apiRequestCallforWeeklyMerchant(1)
-    print("Checking Failed Responses and reinitiating API Request")
-    failedScenarioApiCall(1)
-    print("ReAttempt Ended")
-    time.sleep(1)
-    print("Succesfully Update the details")
+# def secondSheetRequestProcess():
+#     print("Updating Domain and removing Duplicates ===>")
+#     fetchShopifyDomain(1)
+#     print("Executing Rest API CAll Second Sheet===>")
+#     apiRequestCallforWeeklyMerchant(1)
+#     print("Checking Failed Responses and reinitiating API Request")
+#     failedScenarioApiCall(1)
+#     print("ReAttempt Ended")
+#     time.sleep(1)
+#     print("Succesfully Update the details")
 
 # NEW MERCHANT DATA PULL FUNCTION ===>
 # firsSheetRequestProcess()
