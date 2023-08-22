@@ -7,7 +7,7 @@ sys.path.append(parent_directory)
 
 from processheet.sheetprocessor import dataFilter,writeApiCallData
 from backend.extrafunction import createRequestForPost
-from backend.apirequest import testApiCall
+from backend.apirequest import simplApiPullRequestCall
 
 def apiRequestCallforNewMerchant(sheetNumber):
     try:
@@ -18,7 +18,7 @@ def apiRequestCallforNewMerchant(sheetNumber):
                     print("API DATA===>",data)                
                     domainUrl = data.get('shopify_domain',"")
                     apiRequestForPost = createRequestForPost(domainUrl)
-                    response = testApiCall(apiRequestForPost)
+                    response = simplApiPullRequestCall(apiRequestForPost)
                     if(response == True):
                         data = {"merchant_name":data.get('merchant_name',"") ,"shopify_domain": data.get('shopify_domain',""),  "status":"Done"}
                         writeApiCallData(data,0)

@@ -8,7 +8,7 @@ sys.path.append(parent_directory)
 
 from processheet.sheetprocessor import dataFilter,failedScenarioUpdateApiCall
 from backend.extrafunction import createRequestForPost
-from backend.apirequest import testApiCall
+from backend.apirequest import simplApiPullRequestCall
 
 
 def failedScenarioApiCall(sheetNumber):
@@ -19,7 +19,7 @@ def failedScenarioApiCall(sheetNumber):
                 if data.get('status',"") == 'Failed' or data.get('status',"") == 'Re-attempted Failed' and data.get('shopify_domain',""):        
                     domainUrl = data.get('shopify_domain',"")  
                     apiRequestForPost = createRequestForPost(domainUrl)
-                    response = testApiCall(apiRequestForPost)
+                    response = simplApiPullRequestCall(apiRequestForPost)
                     if(response == True):
                         data = {"merchant_name":data.get('merchant_name',"") ,"shopify_domain": data.get('shopify_domain',""),  "status":"Re-attempted Success"}
                         failedScenarioUpdateApiCall(data,sheetNumber)

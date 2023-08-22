@@ -7,22 +7,22 @@ import asyncio
 load_dotenv()
 
 
-def testApiCall(data):
-    try:
-        url= "https://55e9-103-148-63-122.ngrok-free.app/testAPI"
-        payload = data
-        headers = {
-        'Content-Type': 'application/json'
-        }
-        response = requests.request("POST", url, headers=headers, data=payload)
-        res = response.json()      
-        if res["status"] == True:
-            return True
-        else:
-            return False
-    except Exception as e:
-        print(e)
-        return False
+# def testApiCall(data):
+#     try:
+#         url= "https://55e9-103-148-63-122.ngrok-free.app/testAPI"
+#         payload = data
+#         headers = {
+#         'Content-Type': 'application/json'
+#         }
+#         response = requests.request("POST", url, headers=headers, data=payload)
+#         res = response.json()      
+#         if res["status"] == True:
+#             return True
+#         else:
+#             return False
+#     except Exception as e:
+#         print(e)
+#         return False
 
 
 def simplApiPullRequestCall(data):
