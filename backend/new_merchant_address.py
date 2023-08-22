@@ -14,7 +14,8 @@ def apiRequestCallforNewMerchant(sheetNumber):
         dataFromSheet = dataFilter(sheetNumber)
         if dataFromSheet:            
             for index , data in enumerate(dataFromSheet):
-                if data.get('status',"") == 'Not Done' and data.get('shopify_domain',""):                
+                if data.get('status',"") == 'Not Done' and data.get('shopify_domain',""):
+                    print("API DATA===>",data)                
                     domainUrl = data.get('shopify_domain',"")
                     apiRequestForPost = createRequestForPost(domainUrl)
                     response = testApiCall(apiRequestForPost)
@@ -24,11 +25,12 @@ def apiRequestCallforNewMerchant(sheetNumber):
                     else:
                         data = {"merchant_name":data.get('merchant_name',"") ,"shopify_domain": data.get('shopify_domain',""), "status":"Failed"}
                         writeApiCallData(data,0)
+            print("Skipping Process no pending DATA found on New Merchant!!")
     except:
         print("Response")
 
 
-
+apiRequestCallforNewMerchant(0)
 
 
 

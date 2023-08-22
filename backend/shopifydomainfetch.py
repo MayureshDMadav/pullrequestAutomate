@@ -43,7 +43,7 @@ def fetchShopifyDomain(sheetNumber):
                     dataInArray = {"merchant_name": merchantUrl["merchant_name"], "domain_name": "Invalid URL"}
                     writeShopifyDomain(dataInArray, sheetNumber)
             else:
-                print("waiting For Data")
+                print(f"Domain Aleardy Updated For merchant {merchantUrl['merchant_name']}")
         except Exception as e:
             dataInArray = {"merchant_name": merchantUrl["merchant_name"], "domain_name": "Failed"}
             writeShopifyDomain(dataInArray, sheetNumber)
