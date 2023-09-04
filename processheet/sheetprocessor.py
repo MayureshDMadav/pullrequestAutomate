@@ -293,3 +293,4 @@ def pushDataFromFirstToSecond(sheetNumber):
         print("Issue in Data Pushing Function")
 
 
+dataFilter(1)
