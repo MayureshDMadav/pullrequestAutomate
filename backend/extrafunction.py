@@ -26,3 +26,17 @@ def createRequestForPost(data):
 
     response = json.dumps(jsonRequest)
     return response
+
+
+def createRequestForPostAdhoc(time,data):
+    if data:
+        jsonRequest = {}
+        jsonRequest["store_domain"] = data
+        jsonRequest["pull_type"] = "customer_info"
+        jsonRequest["reason"] = "address ingestion"
+        jsonRequest["run_by"] = "mayuresh.madav@getsimpl.com"
+        jsonRequest["start_date"] = str(time)
+        jsonRequest["end_date"] = get_previous_date_time()
+
+    response = json.dumps(jsonRequest)
+    return response

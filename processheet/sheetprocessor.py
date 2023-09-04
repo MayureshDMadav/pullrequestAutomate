@@ -56,6 +56,39 @@ def fetchSheetData(sheetNumber):
         print("Issue with the Fetch Request")
         return [{"status": False}]
 
+#FetchDataFromAdhocSheet
+def adhocSheetDataReading(sheetNumber):
+    validateSheet()
+    try:
+        service = build('sheets', 'v4', credentials=creds)
+        sheet = service.spreadsheets()
+        spreadsheet_id = os.getenv("SAMPLE_SPREADSHEET_ID")
+        spreadsheet = sheet.get(spreadsheetId=spreadsheet_id).execute()
+        sheet_properties = spreadsheet["sheets"][sheetNumber].get("properties", {})
+        sheet_title = sheet_properties.get("title", "")
+        last_row = sheet_properties["gridProperties"].get("rowCount", 0)
+        auto_range = f"{sheet_title}!A3:E{last_row}"
+
+        result = sheet.values().get(spreadsheetId=spreadsheet_id, range=auto_range).execute()
+        values = result.get('values', [])
+        merchant_list = []
+        if values:
+            for data in values:  
+                if len(data[0]) > 1 and len(data[1]) > 1:
+                    sheetData = {
+                        "merchant_name": data[0],
+                        "merchant_url": data[1],
+                        "shopify_domain": data[2],
+                        "timeNdate": data[4] if len(data) >= 5 else "" ,
+                        "startTime": data[3] if len(data) >= 5 else ""
+                    }
+                    merchant_list.append(sheetData)
+        return merchant_list
+
+    except HttpError as err:
+        print("Issue with the Fetch Request")
+        return [{"status": False}]
+
 # Remove Duplicates From Sheets
 def dataFilter(sheetNumber):
     try:
@@ -132,7 +165,6 @@ def writeShopifyDomain(data, sheetNumber):
         return True
     except Exception as e:
         print("Error while Fetching Shopify Domain Data")
-        print(e)
         return False
 
 # Update Status For API Request    
@@ -215,7 +247,7 @@ def writeApiCallDataForWeek(data,sheetNumber):
         print("Issue in writeApiCallDataForWeek functon")
         return False
 
-# Reattempting Request for Failed Scnearios
+# Reattempting Request for Failed Scenario
 def failedScenarioUpdateApiCall(data,sheetNumber):
     try:
         validateSheet()
@@ -273,7 +305,6 @@ def pushDataFromFirstToSecond(sheetNumber):
             for index,data in enumerate(responseOfFirstSheet):
                 if data.get("status",'') == "Done" or data.get("status",'') == "Re-attempted Success":
                     merchant_name = data.get("merchant_name",'')
-                    print(merchant_name)
                     merchant_url = data.get("merchant_url",'')
                     shopify_domain = data.get("shopify_domain",'')
                     status = "Weekly Trigger" 
@@ -292,5 +323,34 @@ def pushDataFromFirstToSecond(sheetNumber):
         print(e)
         print("Issue in Data Pushing Function")
 
-
-dataFilter(1)
+#Push Data from SalesForce Sheet to First Sheet
+def pushDataFromSalesForceToFirst(sheetNumber):
+    try:
+        validateSheet()
+        service = build('sheets', 'v4', credentials=creds)
+        sheet = service.spreadsheets()
+        spreadsheet_id = os.getenv("SAMPLE_SPREADSHEET_ID")
+        spreadsheet = sheet.get(spreadsheetId=spreadsheet_id).execute()
+        sheet_properties = spreadsheet["sheets"][sheetNumber].get("properties", {})
+        sheet_title = sheet_properties.get("title", "")
+        responseOfFourthSheet = dataFilter(sheetNumber)
+        responseOfFirstSheet = fetchSheetData(0)
+        countOfRow = len(responseOfFirstSheet) + 3
+        if responseOfFourthSheet:    
+            for index,data in enumerate(responseOfFourthSheet):
+                if data:
+                    merchant_name = data.get("merchant_name",'')
+                    merchant_url = data.get("merchant_url",'')
+                    update_values = [[merchant_name, merchant_url]] 
+                    update_range = f"{sheet_title}!A{countOfRow}:F{countOfRow}"
+                    sheet.values().update(
+                                spreadsheetId=spreadsheet_id,
+                                range=update_range,
+                                valueInputOption='RAW',
+                                body={"values": update_values}
+                            ).execute()
+                    countOfRow +=1
+        dataFilter(1)            
+    except Exception as e:
+        print(e)
+        print("Issue in Data Pushing Function")
