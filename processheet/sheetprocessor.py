@@ -244,7 +244,46 @@ def writeApiCallDataForWeek(data,sheetNumber):
                             ).execute()                        
         return True            
     except Exception as e:
-        print("Issue in writeApiCallDataForWeek functon")
+        print("Issue in writeApiCallDataForWeek function")
+        return False
+
+# Update Data for Adhoc Request Sheet
+def writeApiCallDataForAdhoc(data,sheetNumber):
+    try:
+        validateSheet()
+        service = build('sheets', 'v4', credentials=creds)
+        sheet = service.spreadsheets()
+        spreadsheet_id = os.getenv("SAMPLE_SPREADSHEET_ID")
+        response = sheet.get(spreadsheetId=spreadsheet_id).execute()
+        sheet_properties = response.get("sheets", [])[sheetNumber].get("properties", {})
+        sheet_title = sheet_properties.get("title", "")
+        last_row = sheet_properties.get("gridProperties", {}).get("rowCount", 0)
+        if merchant_list:
+            for index, data_itms in enumerate(merchant_list,start=3):
+                if data["merchant_name"] == data_itms["merchant_name"]:
+                    if len(data_itms["shopify_domain"]) > 1:
+                        print(f"{data['merchant_name']} at row {index} will get the status as {data['status']} ")
+                        current_datetime = datetime.datetime.now()
+                        update_range = f"{sheet_title}!F{index}:F{last_row}"
+                        update_date = f"{sheet_title}!E{index}:E{last_row}"
+                        status_update = [[data['status']]]
+                        sheet.values().update(
+                                spreadsheetId=spreadsheet_id,
+                                range=update_range,
+                                valueInputOption='RAW',
+                                body={"values": status_update}
+                            ).execute()
+                        append_values = [[current_datetime.strftime(
+                                                 '%Y-%m-%d %H:%M:%S')]]
+                        sheet.values().update(
+                                spreadsheetId=spreadsheet_id,
+                                range=update_date,
+                                valueInputOption='RAW',
+                                body={"values": append_values}
+                            ).execute()                        
+        return True            
+    except Exception as e:
+        print("Issue in writeApiCallDataForWeek function")
         return False
 
 # Reattempting Request for Failed Scenario

@@ -1,4 +1,4 @@
-from processheet.sheetprocessor import dataFilter, writeApiCallDataForWeek
+from processheet.sheetprocessor import dataFilter, writeApiCallDataForAdhoc
 from backend.apirequest import simplApiPullRequestCall
 from backend.extrafunction import createRequestForPostAdhoc
 import sys
@@ -22,11 +22,11 @@ def apiRequestCallForAdhocMerchant(sheetNumber):
                     if (response == True):
                         data = {"merchant_name": data.get('merchant_name', ""), "shopify_domain": data.get(
                             'shopify_domain', ""),  "status": "Done"}
-                        writeApiCallDataForWeek(data, 2)
+                        writeApiCallDataForAdhoc(data, 2)
                     else:
                         data = {"merchant_name": data.get('merchant_name', ""), "shopify_domain": data.get(
                             'shopify_domain', ""), "status": "Failed"}
-                        writeApiCallDataForWeek(data, 2)
+                        writeApiCallDataForAdhoc(data, 2)
     except:
         print("Issue in Adhoc request Merchant")
 
