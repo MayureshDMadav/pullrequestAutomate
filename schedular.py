@@ -48,13 +48,17 @@ schedule.every().friday.at('09:00').do(firsSheetRequestProcess)
 schedule.every().saturday.at('09:00').do(firsSheetRequestProcess)
 
 
+def pushDataFromSalesForcetoFirstSheet():
+    pushDataFromSalesForceToFirst(3)
+
+
 # Push Data From SalesForce Sheet to New Merchant Sheet
-schedule.every().monday.at('09:00').do(pushDataFromSalesForceToFirst(3))
-schedule.every().tuesday.at('09:00').do(pushDataFromSalesForceToFirst(3))
-schedule.every().wednesday.at('09:00').do(pushDataFromSalesForceToFirst(3))
-schedule.every().thursday.at('09:00').do(pushDataFromSalesForceToFirst(3))
-schedule.every().friday.at('09:00').do(pushDataFromSalesForceToFirst(3))
-schedule.every().saturday.at('09:00').do(pushDataFromSalesForceToFirst(3))
+schedule.every().monday.at('09:00').do(pushDataFromSalesForcetoFirstSheet)
+schedule.every().tuesday.at('09:00').do(pushDataFromSalesForcetoFirstSheet)
+schedule.every().wednesday.at('09:00').do(pushDataFromSalesForcetoFirstSheet)
+schedule.every().thursday.at('09:00').do(pushDataFromSalesForcetoFirstSheet)
+schedule.every().friday.at('09:00').do(pushDataFromSalesForcetoFirstSheet)
+schedule.every().saturday.at('09:00').do(pushDataFromSalesForcetoFirstSheet)
 
 
 
