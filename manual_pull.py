@@ -33,28 +33,23 @@ from backend.failed_scnerio import failedScenarioApiCall
 
 
 # # Rest API CALL For New Merchant
-# def firsSheetRequestProcess():
-#     print("Updating Domain and removing Duplicates ===>")
-#     fetchShopifyDomain(0)
-#     print("Executing Rest API CAll  FirstSheet===>")
-#     apiRequestCallforNewMerchant(0)
-#     print("Checking Failed Responses and reinitiating API Request")
-#     failedScenarioApiCall(0)
-#     print("ReAttempt Ended")
-#     pushDataFromFirstToSecond(1)
-#     dataFilter(1)
-#     print("Data have been processed Successfully")
+def firsSheetRequestProcessing(sheetNumber):
+    print("Updating Domain")
+    fetchShopifyDomain(sheetNumber)
+    print("Executing Rest API CAll  FirstSheet===>")
+    apiRequestCallforNewMerchant(sheetNumber)
+    print("Pushing Data to another sheet")
+    pushDataFromFirstToSecond(1)
+    print("Data have been processed Successfully")
 
 
 # # Second Sheet Data Processing
-# def secondSheetRequestProcess():
-#     print("Updating Domain and removing Duplicates ===>")
-#     fetchShopifyDomain(1)
-#     print("Executing Rest API CAll Second Sheet===>")
-#     apiRequestCallforWeeklyMerchant(1)
-#     print("Checking Failed Responses and re-initiating API Request")
-#     failedScenarioApiCall(1)
-#     print("ReAttempt Ended")
-#     time.sleep(1)
-#     print("Successfully Update the details")
+def secondSheetRequestProcessing(sheetNumber):
+    print("Removing Duplicates If any")
+    dataFilter(sheetNumber)
+    print("Updating Domain ===>")
+    fetchShopifyDomain(sheetNumber)
+    print("Executing Rest API CAll Second Sheet===>")
+    apiRequestCallforWeeklyMerchant(sheetNumber)
+    print("Successfully Update the details")
 

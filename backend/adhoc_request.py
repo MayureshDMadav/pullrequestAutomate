@@ -1,4 +1,4 @@
-from processheet.sheetprocessor import dataFilter, writeApiCallDataForAdhoc
+from processheet.sheetprocessor import adhocSheetDataReading, writeApiCallDataForAdhoc
 from backend.apirequest import simplApiPullRequestCall
 from backend.extrafunction import createRequestForPostAdhoc
 import sys
@@ -11,7 +11,7 @@ sys.path.append(parent_directory)
 
 def apiRequestCallForAdhocMerchant(sheetNumber):
     try:
-        dataFromSheet = dataFilter(sheetNumber)
+        dataFromSheet = adhocSheetDataReading(sheetNumber)
         if dataFromSheet:
             for index, data in enumerate(dataFromSheet):
                 if data.get('shopify_domain', "") and data.get('status', "") == 'Not Done':

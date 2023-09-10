@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.oauth2 import service_account
-import datetime
+from datetime import datetime
 
 
 load_dotenv()
@@ -89,7 +89,7 @@ def adhocSheetDataReading(sheetNumber):
         print("Issue with the Fetch Request")
         return [{"status": False}]
 
-# Remove Duplicates From Sheets
+# Remove Duplicates From Sheets Not in Action
 def dataFilter(sheetNumber):
     try:
         validateSheet()
@@ -184,7 +184,7 @@ def writeApiCallData(data,sheetNumber):
                     if data["merchant_name"] == data_itms["merchant_name"]:
                         if len(data_itms["shopify_domain"]) > 1:
                             print(f"{data['merchant_name']} at row {index} will get the status as {data['status']} ")
-                            current_datetime = datetime.datetime.now()
+                            current_datetime = datetime.now()
                             update_range = f"{sheet_title}!E{index}:E{last_row}"
                             update_date = f"{sheet_title}!D{index}:D{last_row}"
                             status_update = [[data['status']]]
@@ -206,6 +206,7 @@ def writeApiCallData(data,sheetNumber):
         return True            
     except Exception as e:
         print("Issue in writeApiCallData function")
+        print(e)
         return False
 
 # Update Status For API Request for WeeklySheet   
@@ -224,7 +225,7 @@ def writeApiCallDataForWeek(data,sheetNumber):
                 if data["merchant_name"] == data_itms["merchant_name"]:
                     if len(data_itms["shopify_domain"]) > 1:
                         print(f"{data['merchant_name']} at row {index} will get the status as {data['status']} ")
-                        current_datetime = datetime.datetime.now()
+                        current_datetime = datetime.now()
                         update_range = f"{sheet_title}!E{index}:E{last_row}"
                         update_date = f"{sheet_title}!D{index}:D{last_row}"
                         status_update = [[data['status']]]
@@ -263,7 +264,7 @@ def writeApiCallDataForAdhoc(data,sheetNumber):
                 if data["merchant_name"] == data_itms["merchant_name"]:
                     if len(data_itms["shopify_domain"]) > 1:
                         print(f"{data['merchant_name']} at row {index} will get the status as {data['status']} ")
-                        current_datetime = datetime.datetime.now()
+                        current_datetime = datetime.now()
                         update_range = f"{sheet_title}!F{index}:F{last_row}"
                         update_date = f"{sheet_title}!E{index}:E{last_row}"
                         status_update = [[data['status']]]
@@ -303,7 +304,7 @@ def failedScenarioUpdateApiCall(data,sheetNumber):
                     if data["merchant_name"] == data_itms["merchant_name"]:
                         if len(data_itms["shopify_domain"]) > 1:
                             print(f"{data['merchant_name']} at row {index} will get the status as {data['status']} ")
-                            current_datetime = datetime.datetime.now()
+                            current_datetime = datetime.now()
                             update_range = f"{sheet_title}!E{index}:E{last_row}"
                             update_date = f"{sheet_title}!D{index}:D{last_row}"
                             status_update = [[data['status']]]
@@ -337,30 +338,38 @@ def pushDataFromFirstToSecond(sheetNumber):
         spreadsheet = sheet.get(spreadsheetId=spreadsheet_id).execute()
         sheet_properties = spreadsheet["sheets"][sheetNumber].get("properties", {})
         sheet_title = sheet_properties.get("title", "")
-        responseOfFirstSheet = dataFilter(0)
-        responseOfSecondSheet = fetchSheetData(1)
+        responseOfFirstSheet = fetchSheetData(0)
+        responseOfSecondSheet = fetchSheetData(sheetNumber)
         countOfRow = len(responseOfSecondSheet) + 3
         if responseOfFirstSheet:    
             for index,data in enumerate(responseOfFirstSheet):
-                if data.get("status",'') == "Done" or data.get("status",'') == "Re-attempted Success":
-                    merchant_name = data.get("merchant_name",'')
-                    merchant_url = data.get("merchant_url",'')
-                    shopify_domain = data.get("shopify_domain",'')
-                    status = "Weekly Trigger" 
-                    dataNTime = data.get("timeNdate",'')
-                    update_values = [[merchant_name, merchant_url, shopify_domain,  dataNTime , status ]] 
-                    update_range = f"{sheet_title}!A{countOfRow}:F{countOfRow}"
-                    sheet.values().update(
-                                spreadsheetId=spreadsheet_id,
-                                range=update_range,
-                                valueInputOption='RAW',
-                                body={"values": update_values}
-                            ).execute()
-                    countOfRow +=1
-        dataFilter(1)            
+                date_object = datetime.strptime(data.get("timeNdate",""), "%Y-%m-%d %H:%M:%S")
+                current_date = datetime.now()
+                current_date_n_time = datetime.strptime(str(current_date), "%Y-%m-%d %H:%M:%S.%f")
+                extracted_date_sheet = date_object.strftime("%Y-%m-%d")
+                current_date_for_sheet = current_date_n_time.strftime("%Y-%m-%d")
+                if extracted_date_sheet == current_date_for_sheet: 
+                    if data.get("status",'') == "Done" or data.get("status",'') == "Re-attempted Success":
+                        merchant_name = data.get("merchant_name",'')
+                        print(merchant_name)
+                        merchant_name = data.get("merchant_name",'')
+                        merchant_url = data.get("merchant_url",'')
+                        shopify_domain = data.get("shopify_domain",'')
+                        status = "Weekly Trigger" 
+                        dataNTime = data.get("timeNdate",'')
+                        update_values = [[merchant_name, merchant_url, shopify_domain,  dataNTime , status ]] 
+                        update_range = f"{sheet_title}!A{countOfRow}:F{countOfRow}"
+                        sheet.values().update(
+                                    spreadsheetId=spreadsheet_id,
+                                    range=update_range,
+                                    valueInputOption='RAW',
+                                    body={"values": update_values}
+                                ).execute()
+                        countOfRow +=1
+            fetchSheetData(1)            
     except Exception as e:
-        print(e)
         print("Issue in Data Pushing Function")
+        print(e)
 
 #Push Data from SalesForce Sheet to First Sheet
 def pushDataFromSalesForceToFirst(sheetNumber):
@@ -372,7 +381,7 @@ def pushDataFromSalesForceToFirst(sheetNumber):
         spreadsheet = sheet.get(spreadsheetId=spreadsheet_id).execute()
         sheet_properties = spreadsheet["sheets"][sheetNumber].get("properties", {})
         sheet_title = sheet_properties.get("title", "")
-        responseOfFourthSheet = dataFilter(sheetNumber)
+        responseOfFourthSheet = fetchSheetData(sheetNumber)
         responseOfFirstSheet = fetchSheetData(0)
         countOfRow = len(responseOfFirstSheet) + 3
         if responseOfFourthSheet:    
@@ -389,7 +398,12 @@ def pushDataFromSalesForceToFirst(sheetNumber):
                                 body={"values": update_values}
                             ).execute()
                     countOfRow +=1
-        dataFilter(1)            
+        fetchSheetData(1)            
     except Exception as e:
         print(e)
         print("Issue in Data Pushing Function")
+
+
+
+
+

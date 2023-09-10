@@ -6,14 +6,14 @@ parent_directory = os.path.dirname(os.path.abspath(current_directory))
 sys.path.append(parent_directory)
 
 
-from processheet.sheetprocessor import dataFilter,failedScenarioUpdateApiCall
+from processheet.sheetprocessor import fetchSheetData,failedScenarioUpdateApiCall
 from backend.extrafunction import createRequestForPost
 from backend.apirequest import simplApiPullRequestCall
 
 
 def failedScenarioApiCall(sheetNumber):
     try:
-        dataFromSheet = dataFilter(sheetNumber)
+        dataFromSheet = fetchSheetData(sheetNumber)
         if dataFromSheet:            
             for index , data in enumerate(dataFromSheet):
                 if data.get('status',"") == 'Failed' or data.get('status',"") == 'Re-attempted Failed' and data.get('shopify_domain',""):        

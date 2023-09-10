@@ -1,40 +1,20 @@
 import schedule
 import time
-from backend.shopifydomainfetch import fetchShopifyDomain
-from processheet.sheetprocessor import pushDataFromFirstToSecond, dataFilter ,pushDataFromSalesForceToFirst
-from backend.new_merchant_address import apiRequestCallforNewMerchant
-from backend.weekly_data_request import apiRequestCallforWeeklyMerchant
-from backend.failed_scnerio import failedScenarioApiCall
+# from backend.shopifydomainfetch import fetchShopifyDomain
+# from processheet.sheetprocessor import pushDataFromSalesForceToFirst
+from manual_pull import firsSheetRequestProcessing,secondSheetRequestProcessing
 
 
 # SCHEDULAR FUNCTIONS
 
 # Rest API CALL For New Merchant
 def firsSheetRequestProcess():
-    print("Updating Domain and removing Duplicates ===>")
-    fetchShopifyDomain(0)
-    print("Executing Rest API CAll  FirstSheet===>")
-    apiRequestCallforNewMerchant(0)
-    print("Checking Failed Responses and reinitiating API Request")
-    failedScenarioApiCall(0)
-    print("ReAttempt Ended")
-    pushDataFromFirstToSecond(1)
-    dataFilter(1)
-    print("Data have been processed Successfully")
+    firsSheetRequestProcessing(0)
 
 
 # Second Sheet Data Processing
 def secondSheetRequestProcess():
-    print("Updating Domain and removing Duplicates ===>")
-    fetchShopifyDomain(1)
-    print("Executing Rest API CAll Second Sheet===>")
-    apiRequestCallforWeeklyMerchant(1)
-    print("Checking Failed Responses and re-initiating API Request")
-    failedScenarioApiCall(1)
-    print("ReAttempt Ended")
-    time.sleep(1)
-    print("Successfully Update the details")
-
+    secondSheetRequestProcessing(1)
 
 # Weekly schedular
 schedule.every().thursday.at('17:00').do(secondSheetRequestProcess)
@@ -48,20 +28,23 @@ schedule.every().friday.at('09:00').do(firsSheetRequestProcess)
 schedule.every().saturday.at('09:00').do(firsSheetRequestProcess)
 
 
-def pushDataFromSalesForcetoFirstSheet():
-    pushDataFromSalesForceToFirst(3)
+# def pushDataFromSalesForcetoFirstSheet():
+#     pushDataFromSalesForceToFirst(3)
 
 
 # Push Data From SalesForce Sheet to New Merchant Sheet
-schedule.every().monday.at('09:00').do(pushDataFromSalesForcetoFirstSheet)
-schedule.every().tuesday.at('09:00').do(pushDataFromSalesForcetoFirstSheet)
-schedule.every().wednesday.at('09:00').do(pushDataFromSalesForcetoFirstSheet)
-schedule.every().thursday.at('09:00').do(pushDataFromSalesForcetoFirstSheet)
-schedule.every().friday.at('09:00').do(pushDataFromSalesForcetoFirstSheet)
-schedule.every().saturday.at('09:00').do(pushDataFromSalesForcetoFirstSheet)
+# schedule.every().monday.at('09:00').do(pushDataFromSalesForcetoFirstSheet)
+# schedule.every().tuesday.at('09:00').do(pushDataFromSalesForcetoFirstSheet)
+# schedule.every().wednesday.at('09:00').do(pushDataFromSalesForcetoFirstSheet)
+# schedule.every().thursday.at('09:00').do(pushDataFromSalesForcetoFirstSheet)
+# schedule.every().friday.at('09:00').do(pushDataFromSalesForcetoFirstSheet)
+# schedule.every().saturday.at('09:00').do(pushDataFromSalesForcetoFirstSheet)
 
 
+# firsSheetRequestProcess()
 
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+# while True:
+#     schedule.run_pending()
+#     time.sleep(1)
+
+firsSheetRequestProcess()

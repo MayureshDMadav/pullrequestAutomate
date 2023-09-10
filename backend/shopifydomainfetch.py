@@ -10,10 +10,10 @@ current_directory = os.getcwd()
 parent_directory = os.path.dirname(os.path.abspath(current_directory))
 sys.path.append(parent_directory)
 
-from processheet.sheetprocessor import writeShopifyDomain,dataFilter
+from processheet.sheetprocessor import writeShopifyDomain, fetchSheetData
 
 def fetchShopifyDomain(sheetNumber):
-    data = dataFilter(sheetNumber)
+    data = fetchSheetData(sheetNumber)
     if not data:
         return "Waiting For Data !!!"
 
@@ -25,14 +25,12 @@ def fetchShopifyDomain(sheetNumber):
 
         try:
             shopify_domain = merchantUrl["shopify_domain"]
-
             if not shopify_domain:
                 merchant_url = merchantUrl["merchant_url"]
                 if not merchant_url.startswith("https://"):
                     merchant_url = "https://" + merchant_url
                 else:
                     merchant_url = merchant_url
-
                 chr_options = Options()
                 chr_options.add_argument("--disable-popup-blocking")
                 chr_options.add_argument('--headless')
@@ -48,17 +46,21 @@ def fetchShopifyDomain(sheetNumber):
                 driver.quit()
 
                 if domainName:
-                    dataInArray = {"merchant_name": merchantUrl["merchant_name"], "domain_name": domainName}
+                    dataInArray = {
+                        "merchant_name": merchantUrl["merchant_name"], "domain_name": domainName}
                 else:
-                    dataInArray = {"merchant_name": merchantUrl["merchant_name"], "domain_name": "Invalid URL"}
+                    dataInArray = {
+                        "merchant_name": merchantUrl["merchant_name"], "domain_name": "Invalid URL"}
 
                 writeShopifyDomain(dataInArray, sheetNumber)
             else:
-                print(f"Domain Already Updated For merchant {merchantUrl['merchant_name']}")
+                print(
+                    f"Domain Already Updated For merchant {merchantUrl['merchant_name']}")
 
         except Exception as e:
-            print(e)
-            dataInArray = {"merchant_name": merchantUrl["merchant_name"], "domain_name": "Failed"}
+            dataInArray = {
+                "merchant_name": merchantUrl["merchant_name"], "domain_name": "Failed"}
             writeShopifyDomain(dataInArray, sheetNumber)
             print("Domain Update Failed")
+            
 
