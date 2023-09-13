@@ -26,16 +26,20 @@
       flex-direction:column;
       }
       input[type=text], input[type=date] {
-      margin: 15px;
       width: auto;
       font-size: 11px;
       border: 1px solid #ccc;
       box-sizing: border-box;
       }
-     
-   
+
+      #table_data > td{
+        justify-content: center;
+        display: flex;
+        text-align:center;
+      }
+
       thead{
-        text-align:left;
+        text-align:center;
       }
       button {
       background-color: #8ebf42;
@@ -53,13 +57,13 @@
       button:hover {
       opacity: 0.8;
       }
-
-     
+      tbody#table_data > tr {
+        text-align: center;
+    }
       .container {
       padding: 16px 0;
       text-align:left;
-      width:50%;
-      width: 53%;
+      width: auto;
       }
       span.psw {
       float: right;
@@ -76,11 +80,22 @@
   </head>
   <body>
     <div class="container">
-        <h1>ADHOC REQUEST FORM</h1>
+      <h1>ADHOC REQUEST FORM</h1>
       <button onclick="createHtmlElement()">Add</button>
-      
+
       <form id="form_data" onsubmit="return onSubmit(event)" method="post">
-        <table> <thead><td>Merchant Name</td><td>Merchant Url</td><td>Start Time</td><td>End Time</td></thead> </table>
+        <table>
+          <thead>
+            <td>Merchant Name</td>
+            <td>Merchant Url</td>
+            <td>Start Time</td>
+            <td>End Time</td>
+            <td>Remove</td>
+          </thead>
+          <tbody id="table_data">
+            
+          </tbody>
+        </table>
         <button id="btn_submit" style="margin-top: 21px">Submit</button>
       </form>
     </div>
@@ -104,26 +119,26 @@
 
       function createHtmlElement() {
         const htmlElement = `
-        <div id="input_set">
-            <input type="text" name="merchant_name"  placeholder="Enter Merchant Name" required/>
-            <input type="text" name="merchant_url" placeholder="Enter Merchant URL" required/>
-            <input type="date" name="start_time" required />
-            <input type="date" name="end_time" required />
-            <button onclick="removeElement(this)" style="    background: red;
-            padding: 0px;
-            width:4%;
-            border-radius: 30px;
-            font-size: 14px;
-            ">x</button>
-        </div>
+        <tr >
+            <td> <input type="text" name="merchant_name"  placeholder="Enter Merchant Name" required/></td>
+            <td> <input type="text" name="merchant_url" placeholder="Enter Merchant URL" required/></td>
+            <td> <input type="date" name="start_time" required /></td>
+            <td><input type="date" name="end_time" required /></td>
+            <td>            <button onclick="removeElement(this)" style="    background: red;
+                padding: 0px;
+                width: 50%;
+                border-radius: 30px;
+                font-size: 14px;
+                ">x</button></td>
+            </tr>
         `;
 
-        const targetForm = document.querySelector("#btn_submit");
-        targetForm.insertAdjacentHTML("beforebegin", htmlElement);
+        const targetForm = document.querySelector("#table_data");
+        targetForm.insertAdjacentHTML("beforeend", htmlElement);
       }
 
       function removeElement(button) {
-        const inputSet = button.parentElement;
+        const inputSet = button.parentElement.parentElement;
         inputSet.remove();
       }
     </script>
