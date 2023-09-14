@@ -198,12 +198,14 @@
         inputSet.remove();
         const numberOfRows = document.querySelectorAll("#table_data tr")
         if(numberOfRows.length === 0){
+          const form = document.querySelector("#form_data")
           const addMore = document.querySelector("#add_more")
           const addButton = document.querySelector("#add_button")
           const tableHead = document.querySelector("thead")
           addMore.remove();
           addButton.style.display = "block";
           tableHead.style.display = "none";
+          form.style.display ="none";
         }
       }
     </script>
