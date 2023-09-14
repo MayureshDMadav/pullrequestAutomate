@@ -81,8 +81,7 @@
   <body>
     <div class="container">
       <h1>ADHOC REQUEST FORM</h1>
-      <button onclick="createHtmlElement()">Add</button>
-
+      <button id="add_button" onclick="addNewRemove()">Add</button>
       <form id="form_data" onsubmit="return onSubmit(event)" method="post">
         <table style="display: none">
           <thead>
@@ -94,7 +93,7 @@
           </thead>
           <tbody id="table_data"></tbody>
         </table>
-        <button id="btn_submit" style="margin-top: 21px">Submit</button>
+        <button id="btn_submit" style="margin-top: 10px">Submit</button>
       </form>
       <p id="response_text"></p>
     </div>
@@ -152,6 +151,24 @@
         }
       }
 
+
+      function addNewRemove(){
+        const addButton = document.querySelector("#add_button")
+        const tableHead = document.querySelector("thead")
+        addButton.style.display = "none";
+        tableHead.style.display = "";
+        createHtmlElement() 
+        addMoreButton()
+      }
+
+
+      function addMoreButton(){
+          const subMt = document.querySelector("#btn_submit")
+          const addMoreButtonElement = `<button id="add_more" onclick="createHtmlElement()">Add More</button>`
+          subMt.insertAdjacentHTML("beforebegin", addMoreButtonElement); 
+      }
+
+
       function createHtmlElement() {
         const targetHead = document.querySelector("table");
         targetHead.style.display = "table";
@@ -179,6 +196,15 @@
       function removeElement(button) {
         const inputSet = button.parentElement.parentElement;
         inputSet.remove();
+        const numberOfRows = document.querySelectorAll("#table_data tr")
+        if(numberOfRows.length === 0){
+          const addMore = document.querySelector("#add_more")
+          const addButton = document.querySelector("#add_button")
+          const tableHead = document.querySelector("thead")
+          addMore.style.display = "none";
+          addButton.style.display = "block";
+          tableHead.style.display = "none";
+        }
       }
     </script>
   </body>

@@ -14,8 +14,6 @@ token_path = os.path.join(current_dir, 'keys.json')
 creds = None
 
 # Validation Of Sheet
-
-
 def validateSheet():
     global creds
     if os.path.exists(token_path):
@@ -25,8 +23,6 @@ def validateSheet():
         print("Data file not found")
 
 # Fetch Data From Sheet
-
-
 def fetchSheetData(sheetNumber):
     validateSheet()
     try:
@@ -62,8 +58,6 @@ def fetchSheetData(sheetNumber):
         return [{"status": False}]
 
 # FetchDataFromAdhocSheet
-
-
 def adhocSheetDataReading(sheetNumber):
     validateSheet()
     try:
@@ -87,8 +81,10 @@ def adhocSheetDataReading(sheetNumber):
                         "merchant_name": data[0],
                         "merchant_url": data[1],
                         "shopify_domain": data[2],
-                        "timeNdate": data[3] if len(data) >= 1 else "",
-                        "status": data[4] if len(data) >= 1 else ""
+                        "start_time": data[3] if len(data[3]) >= 1 else "",
+                        "end_time": data[4] if len(data[4]) >= 1 else "",
+                        "timeNdate": data[5] if len(data[5]) >= 1 else "",
+                        "status": data[6] if len(data[6]) >= 1 else ""
                     }
                     merchant_list.append(sheetData)
         return merchant_list
@@ -98,8 +94,6 @@ def adhocSheetDataReading(sheetNumber):
         return [{"status": False}]
 
 # Remove Duplicates From Sheets Not in Action
-
-
 def dataFilter(sheetNumber):
     try:
         validateSheet()
@@ -148,9 +142,46 @@ def dataFilter(sheetNumber):
         print("Issue with Filter Function !!")
         return filtered_data
 
+# Write Data from Front to AdhocRequest Sheet
+def writeDataForAdhocFront(dataInput, sheetNumber):
+    try:
+        validateSheet()
+        service = build('sheets', 'v4', credentials=creds)
+        sheet = service.spreadsheets()
+        spreadsheet_id = os.getenv("SAMPLE_SPREADSHEET_ID")
+        response = sheet.get(spreadsheetId=spreadsheet_id).execute()
+        sheet_properties = response.get(
+            "sheets", [])[sheetNumber].get("properties", {})
+        sheet_title = sheet_properties.get("title", "")
+        last_row = sheet_properties.get(
+            "gridProperties", {}).get("rowCount", 0)
+        responseOfAdhoc = adhocSheetDataReading(sheetNumber)
+        countOfrow = len(responseOfAdhoc) + 3
+        for items, data in enumerate(responseOfAdhoc, start=3):
+            if dataInput:
+                for index, items in enumerate(dataInput):
+                    merchant_name = items.get("merchant_name", "")
+                    merchant_url = items.get("merchant_url", "")
+                    start_time = items.get("start_time", "")
+                    end_time = items.get("end_time", "")
+                    update_values = [
+                        [merchant_name, merchant_url, " ", start_time, end_time, "", "Not Done"]]
+                    update_range = f"{sheet_title}!A{countOfrow}:G{countOfrow}"
+                    sheet.values().update(
+                        spreadsheetId=spreadsheet_id,
+                        range=update_range,
+                        valueInputOption='RAW',
+                        body={"values": update_values}
+                    ).execute()
+                    countOfrow += 1
+                return True
+            else:
+                return False
+
+    except Exception as e:
+        print(e)
+
 # Update Domain Name on the Sheet
-
-
 def writeShopifyDomain(data, sheetNumber):
     try:
         validateSheet()
@@ -186,8 +217,6 @@ def writeShopifyDomain(data, sheetNumber):
         return False
 
 # Update Status For API Request
-
-
 def writeApiCallData(data, sheetNumber):
     try:
         validateSheet()
@@ -233,8 +262,6 @@ def writeApiCallData(data, sheetNumber):
         return False
 
 # Update Status For API Request for WeeklySheet
-
-
 def writeApiCallDataForWeek(data, sheetNumber):
     try:
         validateSheet()
@@ -277,8 +304,6 @@ def writeApiCallDataForWeek(data, sheetNumber):
         return False
 
 # Update Data for Adhoc Request Sheet
-
-
 def writeApiCallDataForAdhoc(data, sheetNumber):
     try:
         validateSheet()
@@ -298,8 +323,8 @@ def writeApiCallDataForAdhoc(data, sheetNumber):
                         print(
                             f"{data['merchant_name']} at row {index} will get the status as {data['status']} ")
                         current_datetime = datetime.now()
-                        update_range = f"{sheet_title}!F{index}:F{last_row}"
-                        update_date = f"{sheet_title}!E{index}:E{last_row}"
+                        update_range = f"{sheet_title}!G{index}:G{last_row}"
+                        update_date = f"{sheet_title}!F{index}:F{last_row}"
                         status_update = [[data['status']]]
                         sheet.values().update(
                             spreadsheetId=spreadsheet_id,
@@ -321,8 +346,6 @@ def writeApiCallDataForAdhoc(data, sheetNumber):
         return False
 
 # Reattempting Request for Failed Scenario
-
-
 def failedScenarioUpdateApiCall(data, sheetNumber):
     try:
         validateSheet()
@@ -367,8 +390,6 @@ def failedScenarioUpdateApiCall(data, sheetNumber):
         return False
 
 # Push Data from First Sheet to  Second Sheet
-
-
 def pushDataFromFirstToSecond(sheetNumber):
     try:
         validateSheet()
@@ -417,8 +438,6 @@ def pushDataFromFirstToSecond(sheetNumber):
         print(e)
 
 # Push Data from SalesForce Sheet to First Sheet
-
-
 def pushDataFromSalesForceToFirst(sheetNumber):
     try:
         validateSheet()
@@ -452,40 +471,8 @@ def pushDataFromSalesForceToFirst(sheetNumber):
         print("Issue in Data Pushing Function")
 
 
-def writeDataForAdhocFront(dataInput, sheetNumber):
-    try:
-        validateSheet()
-        service = build('sheets', 'v4', credentials=creds)
-        sheet = service.spreadsheets()
-        spreadsheet_id = os.getenv("SAMPLE_SPREADSHEET_ID")
-        response = sheet.get(spreadsheetId=spreadsheet_id).execute()
-        sheet_properties = response.get(
-            "sheets", [])[sheetNumber].get("properties", {})
-        sheet_title = sheet_properties.get("title", "")
-        last_row = sheet_properties.get(
-            "gridProperties", {}).get("rowCount", 0)
-        responseOfAdhoc = adhocSheetDataReading(sheetNumber)
-        countOfrow = len(responseOfAdhoc) + 3
-        for items, data in enumerate(responseOfAdhoc, start=3):
-            if dataInput:
-                for index, items in enumerate(dataInput):
-                    merchant_name = items.get("merchant_name", "")
-                    merchant_url = items.get("merchant_url", "")
-                    start_time = items.get("start_time", "")
-                    end_time = items.get("end_time", "")
-                    update_values = [
-                        [merchant_name, merchant_url, " ", start_time, end_time, "", "Not Done"]]
-                    update_range = f"{sheet_title}!A{countOfrow}:G{countOfrow}"
-                    sheet.values().update(
-                        spreadsheetId=spreadsheet_id,
-                        range=update_range,
-                        valueInputOption='RAW',
-                        body={"values": update_values}
-                    ).execute()
-                    countOfrow += 1
-                return True
-            else:
-                return False
 
-    except Exception as e:
-        print(e)
+
+
+
+
