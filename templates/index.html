@@ -9,73 +9,73 @@
       rel="stylesheet"
     />
     <style>
-      html, body {
-      display: flex;
-      justify-content: center;
-      font-family: Roboto, Arial, sans-serif;
-      font-size: 15px;
-      width:100%
-      }
-      #input_set{
-        display:flex !important;
-
-      }
-      #form_data {
-      border: 5px solid #f1f1f1;
-      display:flex;
-      flex-direction:column;
-      }
-      input[type=text], input[type=date] {
-      width: auto;
-      font-size: 11px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-      }
-
-      #table_data > td{
-        justify-content: center;
+        html, body {
         display: flex;
-        text-align:center;
-      }
+        justify-content: center;
+        font-family: Roboto, Arial, sans-serif;
+        font-size: 15px;
+        width:100%
+        }
+        #input_set{
+          display:flex !important;
 
-      thead{
+        }
+        #form_data {
+        border: 5px solid #f1f1f1;
+        display:none;
+        flex-direction:column;
+        }
+        input[type=text], input[type=date] {
+        width: auto;
+        font-size: 15px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+        }
+
+        #table_data > td{
+          justify-content: center;
+          display: flex;
+          text-align:center;
+        }
+
+        thead{
+          text-align:center;
+        }
+        button {
+        background-color: #8ebf42;
+        color: white;
+        padding: 14px 0;
+        margin: 10px 0;
+        border: none;
+        cursor: grabbing;
+        width: 100%;
+        }
+        h1 {
         text-align:center;
+        fone-size:18;
+        }
+        button:hover {
+        opacity: 0.8;
+        }
+        tbody#table_data > tr {
+          text-align: center;
       }
-      button {
-      background-color: #8ebf42;
-      color: white;
-      padding: 14px 0;
-      margin: 10px 0;
-      border: none;
-      cursor: grabbing;
-      width: 100%;
-      }
-      h1 {
-      text-align:center;
-      fone-size:18;
-      }
-      button:hover {
-      opacity: 0.8;
-      }
-      tbody#table_data > tr {
-        text-align: center;
-    }
-      .container {
-      padding: 16px 0;
-      text-align:left;
-      width: auto;
-      }
-      span.psw {
-      float: right;
-      padding-top: 0;
-      padding-right: 15px;
-      }
-      /* Change styles for span on extra small screens */
-      @media screen and (max-width: 300px) {
-      span.psw {
-      display: block;
-      float: none;
-      }
+        .container {
+        padding: 16px 0;
+        text-align:left;
+        width: auto;
+        }
+        span.psw {
+        float: right;
+        padding-top: 0;
+        padding-right: 15px;
+        }
+        /* Change styles for span on extra small screens */
+        @media screen and (max-width: 300px) {
+        span.psw {
+        display: block;
+        float: none;
+        }
     </style>
   </head>
   <body>
@@ -84,7 +84,7 @@
       <button onclick="createHtmlElement()">Add</button>
 
       <form id="form_data" onsubmit="return onSubmit(event)" method="post">
-        <table>
+        <table style="display: none">
           <thead>
             <td>Merchant Name</td>
             <td>Merchant Url</td>
@@ -92,20 +92,21 @@
             <td>End Time</td>
             <td>Remove</td>
           </thead>
-          <tbody id="table_data">
-            
-          </tbody>
+          <tbody id="table_data"></tbody>
         </table>
         <button id="btn_submit" style="margin-top: 21px">Submit</button>
       </form>
+      <p id="response_text"></p>
     </div>
 
     <script>
-      function onSubmit(e) {
+      async function onSubmit(e) {
         e.preventDefault();
+        const btnPorcess = document.querySelector("#btn_submit");
+        btnPorcess.setAttribute("disable","disabled")
+        btnPorcess.innerHTML = "Processing"
         const jsonData = [];
-        const inputSets = document.querySelectorAll("#input_set");
-
+        const inputSets = document.querySelectorAll("#table_data tr");
         inputSets.forEach((inputSet) => {
           const collatedData = {};
           inputSet.querySelectorAll("input").forEach((input) => {
@@ -113,11 +114,49 @@
           });
           jsonData.push(collatedData);
         });
+        try {
+          let request = await fetch("/adhocRequest", {
+            method: "POST",
+            body: JSON.stringify(jsonData),
+            headers: {
+              "content-type": "application/json",
+            },
+          });
+          let response = await request.json();
+          if (response.status == true) {
+            const paraResponse = document.querySelector("#response_text");
+            paraResponse.style.color = "green";
+            paraResponse.style.textAlign = "center";
+            paraResponse.innerHTML = "Data Inserted Succesfully !!!";
+            btnPorcess.removeAttribute("disable")
+            btnPorcess.innerHTML = "Submit"
+            reloadResponse(paraResponse)
+          } else {
+            const paraResponse = document.querySelector("#response_text");
+            paraResponse.style.color = "red";
+            paraResponse.style.textAlign = "center";
+            paraResponse.innerHTML = "Data Insertion Failed !!!";
+            btnPorcess.removeAttribute("disable")
+            btnPorcess.innerHTML = "Submit"
+            reloadResponse(paraResponse)
+          }
 
-        console.log(jsonData);
+          function reloadResponse(element){
+            setTimeout(()=>{
+              element.innerHTML = ""
+            },3000)  
+          }
+
+        } catch (e) {
+          console.log(e);
+        }
       }
 
       function createHtmlElement() {
+        const targetHead = document.querySelector("table");
+        targetHead.style.display = "table";
+        const submitButton = document.querySelector("#form_data");
+        submitButton.style.display = "flex";
         const htmlElement = `
         <tr >
             <td> <input type="text" name="merchant_name"  placeholder="Enter Merchant Name" required/></td>
