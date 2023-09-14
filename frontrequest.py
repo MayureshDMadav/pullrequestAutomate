@@ -16,7 +16,6 @@ def formSubmit():
     try:
         data =  request.get_json()
         response =  writeDataForAdhocFront(data,2)
-        print("Back Request ==>", response)
         if response is True:
             return {"status": True}
         else:

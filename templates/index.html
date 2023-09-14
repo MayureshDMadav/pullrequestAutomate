@@ -134,7 +134,7 @@
             const paraResponse = document.querySelector("#response_text");
             paraResponse.style.color = "red";
             paraResponse.style.textAlign = "center";
-            paraResponse.innerHTML = "Data Insertion Failed !!!";
+            paraResponse.innerHTML = "Request Failed Please Try Later !!!";
             btnPorcess.removeAttribute("disable")
             btnPorcess.innerHTML = "Submit"
             reloadResponse(paraResponse)
@@ -150,6 +150,9 @@
           console.log(e);
         }
       }
+
+
+
 
 
       function addNewRemove(){
@@ -176,10 +179,10 @@
         submitButton.style.display = "flex";
         const htmlElement = `
         <tr >
-            <td> <input type="text" name="merchant_name"  placeholder="Enter Merchant Name" required/></td>
+            <td> <input type="text" name="merchant_name"  placeholder="Enter Merchant Name"  required/></td>
             <td> <input type="text" name="merchant_url" placeholder="Enter Merchant URL" required/></td>
-            <td> <input type="date" name="start_time" required /></td>
-            <td><input type="date" name="end_time" required /></td>
+            <td> <input type="date" name="start_time" max="${dateNtime()}" required /></td>
+            <td><input type="date" name="end_time" max="${dateNtime()}" required /></td>
             <td>            <button onclick="removeElement(this)" style="    background: red;
                 padding: 0px;
                 width: 50%;
@@ -207,7 +210,25 @@
           tableHead.style.display = "none";
           form.style.display ="none";
         }
+
       }
+
+
+      function dateNtime (){
+        const todayDate = new Date();
+        let month = todayDate.getMonth() + 1;
+        let year = todayDate.getUTCFullYear();
+        let tdate = todayDate.getDate();
+        if(month <= 9){
+          month = '0' +  month;
+        }
+        if(tdate <= 9){
+          tdate = '0' + todayDate.getDate();
+        }
+        return year + '-' + month + '-' + tdate
+      }
+
+
     </script>
   </body>
 </html>

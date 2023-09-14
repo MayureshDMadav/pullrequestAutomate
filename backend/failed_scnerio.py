@@ -8,7 +8,7 @@ sys.path.append(parent_directory)
 
 from processheet.sheetprocessor import fetchSheetData,failedScenarioUpdateApiCall
 from backend.extrafunction import createRequestForPost
-from backend.apirequest import simplApiPullRequestCall
+from backend.apirequest import simplApiPullRequestCall,testApiCall
 
 
 def failedScenarioApiCall(sheetNumber):

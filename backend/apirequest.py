@@ -9,7 +9,7 @@ load_dotenv()
 
 def testApiCall(data):
     try:
-        url= "https://55e9-103-148-63-122.ngrok-free.app/testAPI"
+        url= "https://ca27-13-234-162-42.ngrok-free.app/testAPI"
         payload = data
         headers = {
         'Content-Type': 'application/json'

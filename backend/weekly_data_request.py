@@ -7,7 +7,7 @@ sys.path.append(parent_directory)
 
 from processheet.sheetprocessor import fetchSheetData,writeApiCallDataForWeek
 from backend.extrafunction import createRequestForPost
-from backend.apirequest import simplApiPullRequestCall
+from backend.apirequest import simplApiPullRequestCall,testApiCall
 
 def apiRequestCallforWeeklyMerchant(sheetNumber):
     try:
@@ -24,9 +24,9 @@ def apiRequestCallforWeeklyMerchant(sheetNumber):
                     else:
                         data = {"merchant_name":data.get('merchant_name',"") ,"shopify_domain": data.get('shopify_domain',""), "status":"Failed"}
                         writeApiCallDataForWeek(data,sheetNumber)
-    except:
+    except Exception as e:
+        print(e)
         print("Issue in weekly request Merchant")
-
 
 
 
