@@ -36,6 +36,7 @@ def adhocSheetDataProcess(sheetNumber):
 # # Rest API CALL For New Merchant
 def firsSheetRequestProcessing(sheetNumber):
     print("Updating Domain")
+    dataFilter(sheetNumber)
     fetchShopifyDomain(sheetNumber)
     print("Executing Rest API CAll  FirstSheet===>")
     apiRequestCallforNewMerchant(sheetNumber)
@@ -56,10 +57,13 @@ def secondSheetRequestProcessing(sheetNumber):
 
 
 
-def main():
-    firsSheetRequestProcessing(0)
-    secondSheetRequestProcessing(1)
-    adhocSheetDataProcess(2)
+# def main():
+#     firsSheetRequestProcessing(0)
+#     secondSheetRequestProcessing(1)
+#     adhocSheetDataProcess(2)
 
 
-main()
+# main()
+
+
+firsSheetRequestProcessing(0)

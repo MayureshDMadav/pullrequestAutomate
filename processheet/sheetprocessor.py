@@ -1,10 +1,19 @@
-import os.path
-from dotenv import load_dotenv
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-from google.oauth2 import service_account
-from datetime import datetime
 
+import os.path
+import sys
+import os
+from datetime import datetime
+from google.oauth2 import service_account
+from googleapiclient.errors import HttpError
+from googleapiclient.discovery import build
+from dotenv import load_dotenv
+
+
+current_directory = os.getcwd()
+parent_directory = os.path.dirname(os.path.abspath(current_directory))
+sys.path.append(parent_directory)
+
+from backend.extrafunction import get_current_date, get_last_fourth_date
 
 load_dotenv()
 
@@ -173,7 +182,7 @@ def dataFilterForAdhoc(sheetNumber):
                     f"Duplicate Record for {item['merchant_name']} at row {str(index)} hence Deleted")
         if filtered_data:
             values_to_write = [[item['merchant_name'], item['merchant_url'],
-                                item['shopify_domain'],item['start_time'] ,item['end_time'],item['timeNdate']]  for item in filtered_data]
+                                item['shopify_domain'], item['start_time'], item['end_time'], item['timeNdate']] for item in filtered_data]
             update_range = f"{sheet_title}!A3:G{last_row}"
             clear_range = f"{sheet_title}!A3:F{last_row}"
             update_values = {'values': values_to_write}
@@ -491,7 +500,7 @@ def pushDataFromFirstToSecond(sheetNumber):
         countOfRow = len(responseOfSecondSheet) + 3
         if responseOfFirstSheet:
             for index, data in enumerate(responseOfFirstSheet):
-                if(data.get("timeNdate","")):
+                if (data.get("timeNdate", "")):
                     date_object = datetime.strptime(
                         data.get("timeNdate", ""), "%Y-%m-%d %H:%M:%S")
                     print(date_object)
@@ -525,8 +534,8 @@ def pushDataFromFirstToSecond(sheetNumber):
     except Exception as e:
         print("Issue in Data Pushing Function")
 
-# Push Data from SalesForce Sheet to First Sheet
-def pushDataFromSalesForceToFirst(sheetNumber):
+# Get Data from SalesForce Sheet 
+def getDataFromSalesForceSheet(sheetNumber):
     try:
         validateSheet()
         service = build('sheets', 'v4', credentials=creds)
@@ -536,28 +545,62 @@ def pushDataFromSalesForceToFirst(sheetNumber):
         sheet_properties = spreadsheet["sheets"][sheetNumber].get(
             "properties", {})
         sheet_title = sheet_properties.get("title", "")
-        responseOfFourthSheet = fetchSheetData(sheetNumber)
-        responseOfFirstSheet = fetchSheetData(0)
-        countOfRow = len(responseOfFirstSheet) + 3
-        if responseOfFourthSheet:
-            for index, data in enumerate(responseOfFourthSheet):
-                if data:
-                    merchant_name = data.get("merchant_name", '')
-                    merchant_url = data.get("merchant_url", '')
-                    update_values = [[merchant_name, merchant_url]]
-                    update_range = f"{sheet_title}!A{countOfRow}:F{countOfRow}"
-                    sheet.values().update(
-                        spreadsheetId=spreadsheet_id,
-                        range=update_range,
-                        valueInputOption='RAW',
-                        body={"values": update_values}
-                    ).execute()
-                    countOfRow += 1
-        fetchSheetData(1)
+        last_row = sheet_properties["gridProperties"].get("rowCount", 0)
+        auto_range = f"{sheet_title}!A2:C{last_row}"
+
+        result = sheet.values().get(spreadsheetId=spreadsheet_id, range=auto_range).execute()
+        values = result.get('values', [])
+        merchant_list = []
+        if values:
+            for index, items in enumerate(values):
+                if not items:
+                    return merchant_list.append("Data Not Found")
+                else:
+                    dateNtime = items[2]
+                    current_date = get_current_date()
+                    last_fourth_date = get_last_fourth_date()
+                    # print("current time",current_date)
+                    # print("last fourth date",last_fourth_date)
+                    # print("sheetTime",dateNtime)
+                    if dateNtime == current_date or last_fourth_date < dateNtime:
+                        merchant_list.append(
+                            {"merchant_name": items[0], "merchant_url": items[1]})
+        return merchant_list
     except Exception as e:
-        print(e)
         print("Issue in Data Pushing Function")
 
+# Push Data from SalesForce Sheet to First Sheet
+def pusDataFromSalesForceToFirst(sheetNumber):
+    try:
+        validateSheet()
+        service = build('sheets', 'v4', credentials=creds)
+        sheet = service.spreadsheets()
+        spreadsheet_id = os.getenv("SAMPLE_SPREADSHEET_ID")
+        spreadsheet = sheet.get(spreadsheetId=spreadsheet_id).execute()
+        sheet_properties = spreadsheet["sheets"][sheetNumber].get(
+            "properties", {})
+        sheet_title = sheet_properties.get("title", "")
+        responseOfSalesForceSheet = getDataFromSalesForceSheet(3)
+        responseOfFirstSheet = fetchSheetData(sheetNumber)
+        countOfRow = len(responseOfFirstSheet) + 3
+        for index, items in enumerate(responseOfSalesForceSheet):
+            if not items:
+                return "Data Not Found"
+            else:
+                merchant_name = items["merchant_name"]
+                merchant_url = items["merchant_url"]
 
+            update_values = [[merchant_name, merchant_url]]
+            update_range = f"{sheet_title}!A{countOfRow}:B{countOfRow}"
+            sheet.values().update(
+                spreadsheetId=spreadsheet_id,
+                range=update_range,
+                valueInputOption='RAW',
+                body={"values": update_values}
+            ).execute()
+            countOfRow += 1
+
+    except Exception as e:
+        print(e)
 
 
