@@ -1,10 +1,10 @@
 from backend.adhoc_request import apiRequestCallForAdhocMerchant
 from backend.failed_scnerio import failedScenarioApiCall
 from backend.shopifydomainfetch import fetchShopifyDomain,fetchShopifyDomainForAdhoc
-from processheet.sheetprocessor import pushDataFromFirstToSecond, dataFilter,dataFilterForAdhoc
+from processheet.sheetprocessor import dataFilter,dataFilterForAdhoc,pusDataFromSalesForceToFirst,pushDataFromFirstToSecond
 from backend.new_merchant_address import apiRequestCallforNewMerchant
 from backend.weekly_data_request import apiRequestCallforWeeklyMerchant
-from backend.failed_scnerio import failedScenarioApiCall
+
 
 
 # Manual Domain Update
@@ -35,8 +35,9 @@ def adhocSheetDataProcess(sheetNumber):
 
 # # Rest API CALL For New Merchant
 def firsSheetRequestProcessing(sheetNumber):
-    print("Updating Domain")
+    print("fileter Duplicate")
     dataFilter(sheetNumber)
+    print("Updating Domain")
     fetchShopifyDomain(sheetNumber)
     print("Executing Rest API CAll  FirstSheet===>")
     apiRequestCallforNewMerchant(sheetNumber)
@@ -62,8 +63,9 @@ def secondSheetRequestProcessing(sheetNumber):
 #     secondSheetRequestProcessing(1)
 #     adhocSheetDataProcess(2)
 
+# pusDataFromSalesForceToFirst(0)
+# firsSheetRequestProcessing(0)
+# pushDataFromFirstToSecond(1)
+# dataFilter(1)
 
-# main()
-
-
-firsSheetRequestProcessing(0)
+failedScenarioApiCall(1)
